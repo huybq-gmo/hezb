@@ -12,6 +12,7 @@ export type ProjectView = {
   coverUrl: string | null;
   gallery: string[];
   websiteUrl: string | null;
+  isPublished: boolean;
   isFeatured: boolean;
   title: string;
   summary: string;
@@ -25,6 +26,8 @@ export type MemberView = {
   slug: string;
   avatarUrl: string | null;
   linkedinUrl: string | null;
+  isPublished: boolean;
+  sortOrder: number;
   name: string;
   role: string;
   bio: string;

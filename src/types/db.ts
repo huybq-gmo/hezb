@@ -16,6 +16,7 @@ export type Database = {
         Insert: Omit<Database['public']['Tables']['categories']['Row'], 'id' | 'created_at' | 'updated_at'> &
           Partial<Pick<Database['public']['Tables']['categories']['Row'], 'id' | 'created_at' | 'updated_at'>>;
         Update: Partial<Database['public']['Tables']['categories']['Insert']>;
+        Relationships: [];
       };
       projects: {
         Row: {
@@ -37,11 +38,13 @@ export type Database = {
         Insert: Omit<Database['public']['Tables']['projects']['Row'], 'id' | 'created_at' | 'updated_at'> &
           Partial<Pick<Database['public']['Tables']['projects']['Row'], 'id' | 'created_at' | 'updated_at'>>;
         Update: Partial<Database['public']['Tables']['projects']['Insert']>;
+        Relationships: [];
       };
       project_translations: {
         Row: { project_id: string; locale: Locale; title: string; summary: string; content: string; result: string };
         Insert: Database['public']['Tables']['project_translations']['Row'];
         Update: Partial<Database['public']['Tables']['project_translations']['Insert']>;
+        Relationships: [];
       };
       members: {
         Row: {
@@ -57,11 +60,13 @@ export type Database = {
         Insert: Omit<Database['public']['Tables']['members']['Row'], 'id' | 'created_at' | 'updated_at'> &
           Partial<Pick<Database['public']['Tables']['members']['Row'], 'id' | 'created_at' | 'updated_at'>>;
         Update: Partial<Database['public']['Tables']['members']['Insert']>;
+        Relationships: [];
       };
       member_translations: {
         Row: { member_id: string; locale: Locale; name: string; role: string; bio: string };
         Insert: Database['public']['Tables']['member_translations']['Row'];
         Update: Partial<Database['public']['Tables']['member_translations']['Insert']>;
+        Relationships: [];
       };
       contact_messages: {
         Row: {
@@ -80,13 +85,18 @@ export type Database = {
         Insert: Omit<Database['public']['Tables']['contact_messages']['Row'], 'id' | 'created_at' | 'updated_at' | 'status'> &
           Partial<Pick<Database['public']['Tables']['contact_messages']['Row'], 'id' | 'created_at' | 'updated_at' | 'status'>>;
         Update: Partial<Database['public']['Tables']['contact_messages']['Insert']>;
+        Relationships: [];
       };
       admins: {
         Row: { id: string; created_at: string };
         Insert: Database['public']['Tables']['admins']['Row'];
         Update: Partial<Database['public']['Tables']['admins']['Insert']>;
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean };
     };

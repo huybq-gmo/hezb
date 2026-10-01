@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 640" role="img" aria-labelledby="title desc">
+  <title id="title">Hezb member placeholder</title>
+  <desc id="desc">A transparent Hezb profile placeholder mark.</desc>
+  <circle cx="256" cy="182" r="96" fill="#4F46E5"/>
+  <path d="M82 566c12-135 79-210 174-210s162 75 174 210" fill="#4F46E5"/>
+  <path d="M208 155h24v82h-24zm72 0h24v82h-24zm-56 64 32-38v34l-32 38z" fill="#fff"/>
+</svg>

@@ -17,14 +17,14 @@ export function Header({ locale, messages }: { locale: Locale; messages: Message
   return (
     <header className="site-header">
       <div className="container header-inner">
-        <Link className="logo-link" href={`/${locale}`} aria-label="Hezb home"><Logo /></Link>
+        <Link className="logo-link" href={`/${locale}`} aria-label={`${messages.common.home} - Hezb`}><Logo /></Link>
         <nav className="site-nav" aria-label="Primary navigation">
           {nav.map(([key, href]) => <Link key={key} href={href}>{messages.nav[key]}</Link>)}
         </nav>
         <div className="header-actions">
           <LangSwitch locale={locale} label={messages.common.language} />
           <ThemeToggle label={messages.common.theme} />
-          <Link className="button button-small button-dark" href="/admin/login">Admin</Link>
+          <Link className="button button-small button-dark" href="/admin/login">{messages.common.admin}</Link>
         </div>
       </div>
     </header>

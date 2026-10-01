@@ -14,16 +14,16 @@ Tài liệu này chuyển `HEZB_PLAN.md` và mockup `Hezb – Website UI (Landin
 
 | Phase | Tên | Phụ thuộc | Đầu ra chính | Trạng thái | Ước lượng |
 |---|---|---|---|---|---:|
-| 0 | Chuẩn bị và chốt đầu vào | - | Supabase dev, secrets, schema/seed, asset inventory | Chưa bắt đầu | 0,5 ngày |
-| 1 | Nền tảng Next.js và app shell | 0 | App chạy được, i18n, theme, layout public/admin base | Chưa bắt đầu | 0,5-1 ngày |
-| 2 | Data layer có kiểu | 1 | Queries, schemas, generated DB types, fallback locale | Chưa bắt đầu | 0,5 ngày |
-| 3 | Landing page | 2 | `/vi`, `/en` với nội dung dynamic và responsive UI | Chưa bắt đầu | 1 ngày |
-| 4 | Projects và SEO public | 2, 3 | Danh sách, filter, chi tiết, sitemap, metadata | Chưa bắt đầu | 1 ngày |
-| 5 | Contact và thông báo tùy chọn | 2, 3 | Form an toàn, admin inbox, Edge Function email tùy chọn | Chưa bắt đầu | 1 ngày |
-| 6 | Admin auth và khung quản trị | 2 | Login, guard, sidebar, dashboard | Chưa bắt đầu | 1 ngày |
-| 7 | Admin quản lý projects | 6 | CRUD project, translations, media upload, publish workflow | Chưa bắt đầu | 2 ngày |
-| 8 | Admin members và messages | 6, 7 | CRUD thành viên dynamic, inbox, status workflow | Chưa bắt đầu | 1,5 ngày |
-| 9 | Hardening, kiểm thử và deploy | 3-8 | A11y/SEO/performance, E2E, deploy docs, go-live | Chưa bắt đầu | 1-2 ngày |
+| 0 | Chuẩn bị và chốt đầu vào | - | Supabase dev, secrets, schema/seed, asset inventory | Local complete; external gate pending | 0,5 ngày |
+| 1 | Nền tảng Next.js và app shell | 0 | App chạy được, i18n, theme, layout public/admin base | Complete locally | 0,5-1 ngày |
+| 2 | Data layer có kiểu | 1 | Queries, schemas, generated DB types, fallback locale | Complete locally | 0,5 ngày |
+| 3 | Landing page | 2 | `/vi`, `/en` với nội dung dynamic và responsive UI | Complete locally | 1 ngày |
+| 4 | Projects và SEO public | 2, 3 | Danh sách, filter, chi tiết, sitemap, metadata | Complete locally | 1 ngày |
+| 5 | Contact và thông báo tùy chọn | 2, 3 | Form an toàn, admin inbox, Edge Function email tùy chọn | Complete locally | 1 ngày |
+| 6 | Admin auth và khung quản trị | 2 | Login, guard, sidebar, dashboard | Complete locally | 1 ngày |
+| 7 | Admin quản lý projects | 6 | CRUD project, translations, media upload, publish workflow | Complete locally; cloud persistence pending | 2 ngày |
+| 8 | Admin members và messages | 6, 7 | CRUD thành viên dynamic, inbox, status workflow | Complete locally; cloud persistence pending | 1,5 ngày |
+| 9 | Hardening, kiểm thử và deploy | 3-8 | A11y/SEO/performance, E2E, deploy docs, go-live | Local checks complete; deploy pending | 1-2 ngày |
 
 Tổng thời gian dự kiến: khoảng 10-12 ngày làm việc cho một người dùng AI coding agent.
 

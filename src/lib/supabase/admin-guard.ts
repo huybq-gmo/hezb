@@ -9,7 +9,9 @@ export async function isAdmin(): Promise<boolean> {
   const { data: { user } } = await client.auth.getUser();
   if (!user) return false;
   const { data } = await client.rpc('is_admin');
-  return data === true;
+  if (data === true) return true;
+  await client.auth.signOut();
+  return false;
 }
 
 export async function requireAdmin(): Promise<boolean> {

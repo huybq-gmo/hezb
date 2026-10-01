@@ -31,9 +31,9 @@ export const localProjectTranslations: ProjectTranslation[] = [
 ];
 
 export const localMembers: MemberRow[] = [
-  { id: 'member-anh', slug: 'minh-anh', avatar_url: '/brand/hezb-logo-mono.svg', linkedin_url: null, is_published: true, sort_order: 10, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
-  { id: 'member-nam', slug: 'hoang-nam', avatar_url: '/brand/hezb-logo-mono.svg', linkedin_url: null, is_published: true, sort_order: 20, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
-  { id: 'member-vy', slug: 'thao-vy', avatar_url: '/brand/hezb-logo-mono.svg', linkedin_url: null, is_published: true, sort_order: 30, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
+  { id: 'member-anh', slug: 'minh-anh', avatar_url: '/brand/hezb-member-placeholder.svg', linkedin_url: null, is_published: true, sort_order: 10, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
+  { id: 'member-nam', slug: 'hoang-nam', avatar_url: '/brand/hezb-member-placeholder.svg', linkedin_url: null, is_published: true, sort_order: 20, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
+  { id: 'member-vy', slug: 'thao-vy', avatar_url: '/brand/hezb-member-placeholder.svg', linkedin_url: null, is_published: true, sort_order: 30, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
   { id: 'member-draft', slug: 'draft-member', avatar_url: null, linkedin_url: null, is_published: false, sort_order: 99, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
 ];
 
