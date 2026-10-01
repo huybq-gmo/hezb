@@ -1,0 +1,20 @@
+# Local secrets and generated environment files
+.env
+.env.*
+!.env.example
+
+# Next.js and package-manager output
+.next/
+out/
+node_modules/
+pnpm-debug.log*
+
+# Supabase local state
+supabase/.branches/
+supabase/.temp/
+
+# Test and tooling output
+coverage/
+playwright-report/
+test-results/
+.wrangler/

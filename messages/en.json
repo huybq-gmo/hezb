@@ -1,0 +1,31 @@
+{
+  "metadata": { "title": "Hezb - Build what's next", "description": "Hezb builds AI and software products for real-world problems." },
+  "nav": { "home": "Home", "about": "About", "projects": "Projects", "members": "Members", "careers": "Careers", "contact": "Contact" },
+  "common": { "learnMore": "Learn more", "viewAll": "View all", "contact": "Contact Hezb", "viewProjects": "View projects", "backProjects": "All projects", "loading": "Loading", "language": "Language", "theme": "Theme", "light": "Light", "dark": "Dark", "system": "System", "published": "Published", "draft": "Draft", "featured": "Featured", "save": "Save changes", "cancel": "Cancel", "delete": "Delete", "edit": "Edit", "search": "Search", "empty": "No matching data yet.", "required": "Required" },
+  "home": {
+    "eyebrow": "AI & Software Company",
+    "heroBefore": "Build",
+    "heroHighlight": "what's next",
+    "heroAfter": "with AI & software",
+    "heroBody": "It all started with one question: “What's next?” We did not wait for the future to show up. We chose to build it ourselves.",
+    "storyTitle": "The Hezb story",
+    "storyBody": "Hezb is a technology company focused on AI and software, working with businesses to turn real problems into products that can run in the real world.",
+    "missionTitle": "Our mission",
+    "valuesTitle": "The value we bring",
+    "featuredProjects": "Featured projects",
+    "featuredProjectsBody": "Products we have built together with our customers.",
+    "teamTitle": "The Hezb team",
+    "teamBody": "The people building what's next together.",
+    "ctaTitle": "Curious about what's next?",
+    "ctaBody": "Come build it with us.",
+    "mission": [["Create", "Build AI and software products that solve real problems for people and businesses."], ["Simplify", "Turn complex technology into experiences anyone can use."], ["Democratize", "Bring the power of AI to teams of every size, not just the giants."], ["Partner", "Grow alongside our customers at every stage, not just deliver and disappear."]],
+    "values": [["Efficiency", "Automate repetitive work and give time back to what matters most."], ["Trust", "Stable, secure, transparent products you can rely on."], ["Flexibility", "Tailored solutions that scale as your needs change."], ["Innovation", "Always exploring what's new, so you stay a step ahead instead of chasing trends."]]
+  },
+  "about": { "title": "About Hezb", "intro": "Hezb builds AI and software products that help businesses work more effectively, more simply and with confidence about what comes next.", "sections": [["We solve real problems", "Product thinking starts by listening to the operating context before choosing technology."], ["Technology should feel usable", "A good system gives teams confidence every day instead of adding another layer of complexity."], ["From idea to operation", "Hezb stays alongside customers through discovery, build, launch and the improvement cycles after."]] },
+  "careers": { "title": "Careers at Hezb", "intro": "We look for people who ask good questions, build new things and stay accountable for the products they help create.", "status": "There are no public openings right now. If you think you could be a fit, send Hezb an introduction and your profile." },
+  "projects": { "title": "Our projects", "body": "Products shaped by real problems, real data and long-term collaboration.", "all": "All categories", "empty": "No projects in this category yet.", "client": "Client", "year": "Year", "category": "Category", "tech": "Tech stack", "result": "Results", "gallery": "Project gallery" },
+  "members": { "title": "The Hezb team", "body": "People who ask questions, build and care about every detail." },
+  "contact": { "title": "Contact", "intro": "Tell us about your project. Hezb will reply within one business day.", "name": "Full name", "email": "Email", "company": "Company", "phone": "Phone", "topic": "Interested in", "message": "Message", "send": "Send message", "sending": "Sending...", "success": "Thank you. Hezb has received your message and will be in touch soon.", "error": "We couldn't send this right now. Please try again.", "topics": { "ai": "AI integration", "custom_software": "Custom software", "automation": "Process automation", "other": "Other" }, "emailValue": "hello@hezb.example", "phoneValue": "+84 000 000 000", "address": "Ho Chi Minh City, Vietnam" },
+  "footer": { "copyright": "© 2026 Hezb - Build what's next.", "hashtags": "#Hezb #BuildWhatsNext #AI" },
+  "admin": { "login": "Admin login", "email": "Email", "password": "Password", "signIn": "Sign in", "dashboard": "Dashboard", "projects": "Projects", "members": "Members", "messages": "Messages", "website": "View website", "logout": "Sign out", "demoNote": "Local demo mode - data is not persisted to Supabase.", "noAccess": "This account is not an administrator.", "recent": "Recent messages", "newProject": "Add project", "status": "Status", "actions": "Actions", "newMessage": "New", "read": "Read" }
+}

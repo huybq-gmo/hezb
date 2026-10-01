@@ -1,0 +1,41 @@
+{
+  "metadata": { "title": "Hezb - Build what's next", "description": "Hezb xây dựng sản phẩm AI và phần mềm cho những bài toán thật." },
+  "nav": { "home": "Trang chủ", "about": "Giới thiệu", "projects": "Dự án", "members": "Thành viên", "careers": "Sự nghiệp", "contact": "Liên hệ" },
+  "common": { "learnMore": "Tìm hiểu thêm", "viewAll": "Xem tất cả", "contact": "Liên hệ với Hezb", "viewProjects": "Xem dự án", "backProjects": "Tất cả dự án", "loading": "Đang tải", "language": "Ngôn ngữ", "theme": "Giao diện", "light": "Sáng", "dark": "Tối", "system": "Theo hệ thống", "published": "Đã đăng", "draft": "Bản nháp", "featured": "Nổi bật", "save": "Lưu thay đổi", "cancel": "Hủy", "delete": "Xóa", "edit": "Sửa", "search": "Tìm kiếm", "empty": "Chưa có dữ liệu phù hợp.", "required": "Bắt buộc" },
+  "home": {
+    "eyebrow": "Công ty AI & phần mềm",
+    "heroBefore": "Kiến tạo",
+    "heroHighlight": "điều tiếp theo",
+    "heroAfter": "cùng AI & phần mềm",
+    "heroBody": "Mọi thứ bắt đầu từ một câu hỏi: “Tiếp theo sẽ là gì?” Chúng tôi không chờ tương lai xuất hiện, chúng tôi tự tay xây dựng nó.",
+    "storyTitle": "Câu chuyện của Hezb",
+    "storyBody": "Hezb là công ty công nghệ tập trung vào AI và phần mềm, đồng hành cùng doanh nghiệp để biến những vấn đề thực tế thành sản phẩm có thể vận hành.",
+    "missionTitle": "Sứ mệnh",
+    "valuesTitle": "Giá trị Hezb mang lại",
+    "featuredProjects": "Dự án tiêu biểu",
+    "featuredProjectsBody": "Những sản phẩm chúng tôi đã xây dựng cùng khách hàng.",
+    "teamTitle": "Đội ngũ Hezb",
+    "teamBody": "Những người cùng nhau xây dựng điều tiếp theo.",
+    "ctaTitle": "Tò mò điều gì sẽ đến tiếp theo?",
+    "ctaBody": "Hãy cùng xây dựng với chúng tôi.",
+    "mission": [
+      ["Kiến tạo", "Xây dựng sản phẩm AI và phần mềm giải quyết đúng vấn đề thật của con người và doanh nghiệp."],
+      ["Đơn giản hóa", "Biến công nghệ phức tạp thành trải nghiệm dễ dùng, ai cũng chạm tới được."],
+      ["Phổ cập", "Đưa sức mạnh của AI đến mọi quy mô, không chỉ dành cho những công ty lớn."],
+      ["Đồng hành", "Cùng khách hàng lớn lên qua từng giai đoạn, không chỉ bàn giao rồi rời đi."]
+    ],
+    "values": [
+      ["Hiệu quả", "Tự động hóa việc lặp lại, trả lại thời gian cho điều quan trọng hơn."],
+      ["Tin cậy", "Sản phẩm ổn định, an toàn và minh bạch để bạn yên tâm giao phó."],
+      ["Linh hoạt", "Giải pháp đo ni đóng giày, dễ mở rộng khi nhu cầu thay đổi."],
+      ["Đột phá", "Luôn thử cái mới để bạn đi trước một bước thay vì chạy theo xu hướng."]
+    ]
+  },
+  "about": { "title": "Về Hezb", "intro": "Hezb xây dựng các sản phẩm AI và phần mềm giúp doanh nghiệp làm việc hiệu quả hơn, đơn giản hơn và sẵn sàng cho bước tiếp theo.", "sections": [["Chúng tôi giải quyết vấn đề thật", "Tư duy sản phẩm bắt đầu từ việc lắng nghe và hiểu bối cảnh vận hành, trước khi chọn công nghệ."], ["Công nghệ phải dễ dùng", "Một hệ thống tốt giúp đội ngũ tự tin làm việc mỗi ngày, không tạo thêm một lớp phức tạp."], ["Đồng hành từ ý tưởng đến vận hành", "Hezb cùng khách hàng đi qua cả discovery, build, launch và những vòng cải tiến sau đó."]] },
+  "careers": { "title": "Sự nghiệp tại Hezb", "intro": "Chúng tôi tìm những người thích đặt câu hỏi, xây dựng điều mới và chịu trách nhiệm đến cùng với sản phẩm mình tạo ra.", "status": "Hiện chưa có vị trí tuyển dụng công khai. Nếu bạn nghĩ mình phù hợp, hãy gửi lời chào và hồ sơ cho Hezb." },
+  "projects": { "title": "Dự án của chúng tôi", "body": "Những sản phẩm được tạo ra từ bài toán thật, dữ liệu thật và sự hợp tác lâu dài.", "all": "Tất cả lĩnh vực", "empty": "Chưa có dự án nào trong lĩnh vực này.", "client": "Khách hàng", "year": "Năm", "category": "Lĩnh vực", "tech": "Công nghệ", "result": "Kết quả", "gallery": "Hình ảnh dự án" },
+  "members": { "title": "Đội ngũ Hezb", "body": "Những người đặt câu hỏi, xây dựng và chăm chút cho từng chi tiết." },
+  "contact": { "title": "Liên hệ", "intro": "Kể cho chúng tôi nghe về dự án của bạn. Hezb sẽ phản hồi trong một ngày làm việc.", "name": "Họ tên", "email": "Email", "company": "Công ty", "phone": "Điện thoại", "topic": "Bạn quan tâm", "message": "Nội dung", "send": "Gửi liên hệ", "sending": "Đang gửi...", "success": "Cảm ơn bạn. Hezb đã nhận được tin nhắn và sẽ liên hệ sớm.", "error": "Không thể gửi lúc này. Vui lòng thử lại.", "topics": { "ai": "Tích hợp AI", "custom_software": "Phần mềm theo yêu cầu", "automation": "Tự động hóa quy trình", "other": "Khác" }, "emailValue": "hello@hezb.example", "phoneValue": "+84 000 000 000", "address": "Ho Chi Minh City, Vietnam" },
+  "footer": { "copyright": "© 2026 Hezb - Build what's next.", "hashtags": "#Hezb #BuildWhatsNext #AI" },
+  "admin": { "login": "Đăng nhập quản trị", "email": "Email", "password": "Mật khẩu", "signIn": "Đăng nhập", "dashboard": "Tổng quan", "projects": "Dự án", "members": "Thành viên", "messages": "Liên hệ", "website": "Xem website", "logout": "Đăng xuất", "demoNote": "Chế độ demo local - dữ liệu chưa được lưu vào Supabase.", "noAccess": "Tài khoản không có quyền quản trị.", "recent": "Liên hệ gần đây", "newProject": "Thêm dự án", "status": "Trạng thái", "actions": "Thao tác", "newMessage": "Mới", "read": "Đã xem" }
+}

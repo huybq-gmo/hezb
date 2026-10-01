@@ -1,0 +1,5 @@
+import { localMembers, localMemberTranslations } from '@/lib/data';
+
+export const metadata = { title: 'Members | Hezb', robots: { index: false, follow: false } };
+
+export default function AdminMembersPage() { return <><div className="admin-topline"><div><p className="eyebrow">Content</p><h1>Members</h1></div></div><div className="admin-note">Published member profiles appear on the public team page. Translations remain editable in Supabase admin mode.</div><div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Name</th><th>Role</th><th>Status</th><th>Order</th></tr></thead><tbody>{localMembers.map((member) => { const translation = localMemberTranslations.find((row) => row.member_id === member.id && row.locale === 'en'); return <tr key={member.id}><td><strong>{translation?.name ?? member.slug}</strong></td><td>{translation?.role}</td><td><span className={`status-pill ${member.is_published ? '' : 'draft'}`}>{member.is_published ? 'Published' : 'Draft'}</span></td><td>{member.sort_order}</td></tr>; })}</tbody></table></div></>; }
