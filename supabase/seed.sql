@@ -50,7 +50,8 @@ insert into public.members (slug, is_published, sort_order)
 values
   ('sample-founder', true, 10),
   ('sample-engineer', true, 20),
-  ('sample-designer', false, 30)
+  ('sample-designer', true, 30),
+  ('sample-reviewer', false, 99)
 on conflict (slug) do update set
   is_published = excluded.is_published,
   sort_order = excluded.sort_order;
@@ -63,8 +64,10 @@ join (values
   ('sample-founder', 'en', 'Sample founder', 'Founder', 'Development-only profile.'),
   ('sample-engineer', 'vi', 'Kỹ sư mẫu', 'Software Engineer', 'Hồ sơ mẫu cho môi trường phát triển.'),
   ('sample-engineer', 'en', 'Sample engineer', 'Software Engineer', 'Development-only profile.'),
-  ('sample-designer', 'vi', 'Nhà thiết kế mẫu', 'Product Designer', 'Thành viên nháp để kiểm chứng RLS.'),
-  ('sample-designer', 'en', 'Sample designer', 'Product Designer', 'Draft member used to verify RLS.')
+  ('sample-designer', 'vi', 'Nhà thiết kế mẫu', 'Product Designer', 'Tạo ra trải nghiệm sản phẩm rõ ràng và gần gũi.'),
+  ('sample-designer', 'en', 'Sample designer', 'Product Designer', 'Creates clear, human product experiences.'),
+  ('sample-reviewer', 'vi', 'Thành viên nháp', 'Community reviewer', 'Hồ sơ nháp để kiểm chứng RLS.'),
+  ('sample-reviewer', 'en', 'Draft reviewer', 'Community reviewer', 'Draft profile used to verify RLS.')
 ) as t(slug, locale, name, role, bio) on t.slug = m.slug
 on conflict (member_id, locale) do update set
   name = excluded.name,
@@ -96,3 +99,13 @@ on conflict (job_id, locale) do update set
   summary = excluded.summary,
   description = excluded.description,
   requirements = excluded.requirements;
+
+insert into public.site_settings (id, email, phone, address_vi, address_en, response_time_vi, response_time_en)
+values (1, 'hello@hezb.example', '+84 000 000 000', 'Thành phố Hồ Chí Minh, Việt Nam', 'Ho Chi Minh City, Vietnam', 'Trong 1 ngày làm việc', 'Within 1 business day')
+on conflict (id) do update set
+  email = excluded.email,
+  phone = excluded.phone,
+  address_vi = excluded.address_vi,
+  address_en = excluded.address_en,
+  response_time_vi = excluded.response_time_vi,
+  response_time_en = excluded.response_time_en;

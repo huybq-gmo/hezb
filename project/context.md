@@ -21,7 +21,7 @@
 | 6 - Admin auth/shell | Complete locally | Protected layout, Supabase auth path, local demo auth, responsive sidebar and noindex metadata are implemented. |
 | 7 - Admin projects | Complete locally | Typed editor, translations, publish/feature/reorder/delete actions and 5 MB media validation are implemented. Cloud persistence needs Supabase verification. |
 | 8 - Admin members/messages | Complete locally | Member editor/action, inbox table, status workflow and media validation are implemented. Cloud persistence needs Supabase verification. |
-| 9 - Hardening/deploy | Worker deployed; cloud verification pending | Error/loading/404, E2E, docs, SEO and accessibility foundations pass. Worker deployment is live at `https://contact.hezb.workers.dev`; Lighthouse, cloud security smoke and Supabase production verification remain pending. |
+| 9 - Hardening/deploy | Worker deployed; favicon verified in production | Error/loading/404, E2E, docs, SEO and accessibility foundations pass. Worker deployment is live at `https://contact.hezb.workers.dev`; favicon and production route smoke checks pass. Lighthouse, cloud security smoke and Supabase production verification remain pending. |
 | 10 - Careers and community refresh | Complete locally; migration pending | Public job board with CV application flow, admin role/application workspace, private CV storage policy, three-member no-carousel landing behavior, community positioning, and local project/hero illustrations are implemented. Apply migration `0002_careers.sql` and verify cloud storage/Auth before production. |
 
 ## Verified In Repository
@@ -54,6 +54,7 @@
 - The landing page uses a community-focused hero image and local project illustrations. Featured members are capped at three; exactly three members render as a static grid without carousel controls, while larger sets retain the accessible slider.
 - Careers UI includes published role cards, detail disclosure, application dialog, bilingual fields, and admin CRUD/status/CV signed-link workflow. `tests/phase-10-careers.test.mjs` covers schema, wiring, and local assets.
 - Google Search Console verification is configured through root Next metadata and confirmed in the rendered `/vi` HTML. The verification token is not duplicated in individual pages.
+- Root metadata uses `public/brand/hezb-logo-mono.svg` for browser, shortcut and Apple touch icons. Production `/vi` renders all three icon links, and the asset returns `200 image/svg+xml` from the deployed Worker.
 
 ## External Actions Still Required
 
@@ -107,3 +108,4 @@ Run both Supabase migrations (`0001_initial_schema.sql` and `0002_careers.sql`),
 - **2026-10-02:** Added community positioning, a local collaboration hero image, local project illustrations, and static three-member landing behavior without carousel controls.
 - **2026-10-02:** Added careers/jobs and candidate CV workflow in migration `0002_careers.sql`, including private storage policies, public application validation, admin role CRUD, application status management, signed CV links, and focused contract tests. Local gates pass: 27 contract tests, 6 E2E tests, lint, typecheck, and production build.
 - **2026-10-02:** Added the provided Google Search Console verification token to root metadata. Verification is present in rendered HTML; 28 contract tests, lint, typecheck, and production build pass.
+- **2026-10-02:** Added the Hezb mono mark as the browser favicon and redeployed Worker `contact` as version `912e44ac-3337-4bab-9fec-132d52c57cd4`. Production `/vi` exposes shortcut, icon and Apple touch icon links; the SVG asset and `/en`, `/admin/login`, `/sitemap.xml`, `/robots.txt` return 200, while anonymous `/admin` redirects to `/admin/login`. Contract tests 29/29, lint, typecheck and production build pass.

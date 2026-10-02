@@ -41,3 +41,23 @@ test('Google Search Console verification is configured in root metadata', async 
   assert.match(layout, /verification:\s*\{\s*google:/);
   assert.match(layout, /v6w8uXRzuNiKzMpolQ0w7XVus1_KVxToH76n7CdiRbg/);
 });
+
+test('root metadata uses the Hezb mark for browser icons', async () => {
+  const layout = await read('src/app/layout.tsx');
+  assert.match(layout, /icons:\s*\{/);
+  assert.match(layout, /icon:\s*'\/brand\/hezb-logo-mono\.svg'/);
+  assert.match(layout, /shortcut:\s*'\/brand\/hezb-logo-mono\.svg'/);
+  assert.match(layout, /apple:\s*'\/brand\/hezb-logo-mono\.svg'/);
+});
+
+test('contact details are backed by the settings table and admin editor', async () => {
+  const migration = await read('supabase/migrations/0003_site_settings.sql');
+  const page = await read('src/app/[locale]/contact/page.tsx');
+  const editor = await read('src/components/admin/SettingsEditor.tsx');
+  assert.match(migration, /create table public\.site_settings/);
+  assert.match(migration, /site_settings_public_read/);
+  assert.match(migration, /site_settings_admin_all/);
+  assert.match(page, /getSiteSettings/);
+  assert.match(page, /settings\.email/);
+  assert.match(editor, /saveSiteSettings/);
+});

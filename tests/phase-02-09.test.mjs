@@ -168,8 +168,9 @@ test('theme preference loads after mount to keep server and client markup stable
 
 test('mission and values card indexes remain legible', async () => {
   const css = await read('src/app/globals.css');
-  assert.match(css, /\.feature-index \{[^}]*font-size: 14px/);
+  assert.match(css, /\.feature-index \{[^}]*font-size: 18px/);
   assert.match(css, /\.feature-index \{[^}]*line-height: 1\.2/);
+  assert.match(css, /\.eyebrow \{[^}]*font-size: 14px/);
 });
 
 test('contact form renders Turnstile and forwards its token', async () => {

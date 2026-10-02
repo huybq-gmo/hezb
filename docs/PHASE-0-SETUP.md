@@ -25,6 +25,7 @@ The test checks the versioned schema contract, seed visibility fixture, environm
    Use the dashboard SQL editor for `seed.sql` if the CLI does not support remote seed execution in the installed version. Record the command and result in `project/context.md`.
 3. Confirm the three published projects and two published members are visible with the anon key, while `sample-vision-qc` and `sample-designer` are not.
 4. Create an Auth email/password user, add its UUID to `public.admins`, and verify that a non-admin cannot access admin data. Disable public sign-up in Authentication settings.
+5. Confirm `public.site_settings` has one row and update its public email, phone, address, and response-time values from `/admin/settings`.
 
 ## Cloudflare and optional email
 

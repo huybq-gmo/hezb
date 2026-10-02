@@ -7,6 +7,9 @@ import type { JobApplicationView, JobView } from '@/types/view-models';
 type JobRow = Database['public']['Tables']['jobs']['Row'];
 type JobTranslation = Database['public']['Tables']['job_translations']['Row'];
 
+const publicJobFields = 'id, slug, employment_type, location, is_remote, is_published, sort_order, created_at, updated_at';
+const publicTranslationFields = 'job_id, locale, title, summary, description, requirements';
+
 function mergeJob(job: JobRow, translations: JobTranslation[], locale: Locale): JobView {
   const translation = byLocale(translations, locale);
   const fallback = byLocale(translations, 'vi');
@@ -37,9 +40,10 @@ function localJobsFor(locale: Locale): JobView[] {
 export async function getPublishedJobs(locale: Locale): Promise<JobView[]> {
   const client = getPublicClient();
   if (client) {
-    const jobsResult = await client.from('jobs').select('*').eq('is_published', true).order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+    const jobsResult = await client.from('jobs').select(publicJobFields).eq('is_published', true).order('sort_order', { ascending: true }).order('created_at', { ascending: false });
     if (!jobsResult.error && jobsResult.data) {
-      const translationResult = await client.from('job_translations').select('*').in('job_id', jobsResult.data.map((job) => job.id));
+      if (!jobsResult.data.length) return [];
+      const translationResult = await client.from('job_translations').select(publicTranslationFields).in('job_id', jobsResult.data.map((job) => job.id));
       if (!translationResult.error) return jobsResult.data.map((job) => mergeJob(job, (translationResult.data ?? []).filter((row) => row.job_id === job.id), locale));
     }
   }

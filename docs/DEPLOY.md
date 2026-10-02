@@ -48,7 +48,7 @@ supabase link --project-ref <SUPABASE_PROJECT_REF>
 supabase db push
 ```
 
-The migrations create the application tables, Row Level Security policies, `project-media`, `member-media`, and private `candidate-cvs` buckets, plus the `is_admin()` function. `0002_careers.sql` must be applied after `0001_initial_schema.sql` to enable jobs and candidate applications.
+The migrations create the application tables, public contact settings, Row Level Security policies, `project-media`, `member-media`, and private `candidate-cvs` buckets, plus the `is_admin()` function. Apply `0001_initial_schema.sql`, then `0002_careers.sql`, then `0003_site_settings.sql` to enable jobs, candidate applications, and database-managed contact details.
 
 For local development only, reset and seed the local database with:
 

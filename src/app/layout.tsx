@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   title: 'Hezb community - Build what\'s next',
   description: 'Hezb is a community building AI and software for real-world problems.',
   verification: { google: 'v6w8uXRzuNiKzMpolQ0w7XVus1_KVxToH76n7CdiRbg' },
+  icons: {
+    icon: '/brand/hezb-logo-mono.svg',
+    shortcut: '/brand/hezb-logo-mono.svg',
+    apple: '/brand/hezb-logo-mono.svg',
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

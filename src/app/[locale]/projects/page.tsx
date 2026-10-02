@@ -8,6 +8,8 @@ import { notFound } from 'next/navigation';
 import { localizedMetadata } from '@/lib/seo';
 import type { Metadata } from 'next';
 
+export const revalidate = 300;
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: rawLocale } = await params;
   if (!isLocale(rawLocale)) return {};

@@ -8,6 +8,10 @@ type ProjectRow = Database['public']['Tables']['projects']['Row'];
 type TranslationRow = Database['public']['Tables']['project_translations']['Row'];
 type CategoryRow = Database['public']['Tables']['categories']['Row'];
 
+const publicProjectFields = 'id, slug, category_id, client_name, year, tech, cover_url, gallery, website_url, is_published, is_featured, sort_order, created_at, updated_at';
+const publicTranslationFields = 'project_id, locale, title, summary, content, result';
+const publicCategoryFields = 'id, slug, name_vi, name_en, sort_order, created_at, updated_at';
+
 const illustrationBySlug: Record<string, string> = {
   'sample-ai-insights': '/illustrations/project-ai.jpg',
   'sample-ops-automation': '/illustrations/project-automation.jpg',
@@ -49,15 +53,17 @@ function localProjectsFor(locale: Locale, categorySlug?: string): ProjectView[] 
     .map((project) => mergeProject(project, localProjectTranslations.filter((row) => row.project_id === project.id), localCategories, locale));
 }
 
-async function remoteProjects(locale: Locale, categorySlug?: string): Promise<ProjectView[] | null> {
+async function remoteProjects(locale: Locale, categorySlug?: string, featuredOnly = false): Promise<ProjectView[] | null> {
   const client = getPublicClient();
   if (!client) return null;
-  const query = client.from('projects').select('*').eq('is_published', true).order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+  let query = client.from('projects').select(publicProjectFields).eq('is_published', true).order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+  if (featuredOnly) query = query.eq('is_featured', true);
   const { data: projects, error } = await query;
   if (error || !projects) return null;
+  if (!projects.length) return [];
   const [translationResult, categoryResult] = await Promise.all([
-    client.from('project_translations').select('*').in('project_id', projects.map((row) => row.id)),
-    client.from('categories').select('*').order('sort_order', { ascending: true }),
+    client.from('project_translations').select(publicTranslationFields).in('project_id', projects.map((row) => row.id)),
+    client.from('categories').select(publicCategoryFields).order('sort_order', { ascending: true }),
   ]);
   if (translationResult.error || categoryResult.error) return null;
   const categories = categoryResult.data ?? [];
@@ -69,7 +75,8 @@ export async function getProjects(locale: Locale, categorySlug?: string): Promis
 }
 
 export async function getFeaturedProjects(locale: Locale, limit = 3): Promise<ProjectView[]> {
-  return (await getProjects(locale)).filter((project) => project.isFeatured).slice(0, limit);
+  const remote = await remoteProjects(locale, undefined, true);
+  return (remote ?? localProjectsFor(locale).filter((project) => project.isFeatured)).slice(0, limit);
 }
 
 export async function getAdminProjects(locale: Locale): Promise<ProjectView[]> {
@@ -119,8 +126,19 @@ export async function getAdminProjectInput(id: string) {
 }
 
 export async function getProjectBySlug(slug: string, locale: Locale): Promise<ProjectView | null> {
-  const project = (await getProjects(locale)).find((item) => item.slug === slug);
-  return project ?? null;
+  const client = getPublicClient();
+  if (client) {
+    const { data: project, error } = await client.from('projects').select(publicProjectFields).eq('slug', slug).eq('is_published', true).maybeSingle();
+    if (!error && project) {
+      const [translationResult, categoryResult] = await Promise.all([
+        client.from('project_translations').select(publicTranslationFields).eq('project_id', project.id),
+        client.from('categories').select(publicCategoryFields).order('sort_order', { ascending: true }),
+      ]);
+      if (!translationResult.error && !categoryResult.error) return mergeProject(project, translationResult.data ?? [], categoryResult.data ?? [], locale);
+    }
+    if (!error && !project) return null;
+  }
+  return localProjectsFor(locale).find((item) => item.slug === slug) ?? null;
 }
 
 export async function getPublishedSlugs(): Promise<string[]> {

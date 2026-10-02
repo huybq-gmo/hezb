@@ -43,7 +43,7 @@ export function MemberSlider({ members, labels }: { members: MemberView[]; label
       </div>
     </div>
     <div ref={viewportRef} className="member-slider-viewport" tabIndex={0} onScroll={syncActive}>
-      {members.map((member) => <div className="member-slide" key={member.id}><MemberCard member={member} /></div>)}
+      {members.map((member, index) => <div className="member-slide" key={member.id}><MemberCard member={member} index={index} /></div>)}
     </div>
     <div className="member-slider-dots" role="tablist" aria-label={labels.title}>
       {members.map((member, index) => <button className={`member-dot ${active === index ? 'active' : ''}`} key={member.id} type="button" role="tab" aria-selected={active === index} aria-label={`${labels.goToMember} ${index + 1}`} onClick={() => goTo(index)} />)}

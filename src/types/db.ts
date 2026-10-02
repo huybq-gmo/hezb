@@ -146,6 +146,23 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['job_applications']['Insert']>;
         Relationships: [];
       };
+      site_settings: {
+        Row: {
+          id: number;
+          email: string;
+          phone: string;
+          address_vi: string;
+          address_en: string;
+          response_time_vi: string;
+          response_time_en: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['site_settings']['Row'], 'created_at' | 'updated_at'> &
+          Partial<Pick<Database['public']['Tables']['site_settings']['Row'], 'created_at' | 'updated_at'>>;
+        Update: Partial<Database['public']['Tables']['site_settings']['Insert']>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Enums: Record<string, never>;

@@ -62,6 +62,29 @@ export const localJobTranslations: JobTranslation[] = [
   { job_id: 'job-product-designer', locale: 'en', title: 'Product Designer', summary: 'Shape clear, useful and human product experiences.', description: 'You will join discovery, design and post-launch improvement with the community.', requirements: '- A portfolio of digital products\n- Confident with Figma or an equivalent tool\n- Care about accessibility and interaction details' },
 ];
 
+export const localSiteSettings = {
+  raw: {
+    email: 'hello@hezb.example',
+    phone: '+84 000 000 000',
+    addressVi: 'Thành phố Hồ Chí Minh, Việt Nam',
+    addressEn: 'Ho Chi Minh City, Vietnam',
+    responseTimeVi: 'Trong 1 ngày làm việc',
+    responseTimeEn: 'Within 1 business day',
+  },
+  vi: {
+    email: 'hello@hezb.example',
+    phone: '+84 000 000 000',
+    address: 'Thành phố Hồ Chí Minh, Việt Nam',
+    responseTime: 'Trong 1 ngày làm việc',
+  },
+  en: {
+    email: 'hello@hezb.example',
+    phone: '+84 000 000 000',
+    address: 'Ho Chi Minh City, Vietnam',
+    responseTime: 'Within 1 business day',
+  },
+} as const;
+
 export function byLocale<T extends { locale: Locale }>(rows: T[], locale: Locale, fallback: Locale = 'vi'): T | undefined {
   return rows.find((row) => row.locale === locale) ?? rows.find((row) => row.locale === fallback);
 }

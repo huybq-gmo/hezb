@@ -66,3 +66,10 @@ export type JobApplicationView = {
   status: 'new' | 'reviewing' | 'shortlisted' | 'rejected' | 'archived';
   createdAt: string;
 };
+
+export type SiteSettingsView = {
+  email: string;
+  phone: string;
+  address: string;
+  responseTime: string;
+};
