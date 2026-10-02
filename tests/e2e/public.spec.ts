@@ -8,10 +8,10 @@ test('visitor can browse Vietnamese landing and projects', async ({ page }) => {
   await expect(page).toHaveURL(/\/vi\/projects$/);
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Dự án');
   await page.goto('/vi');
-  const team = page.getByRole('region', { name: 'Đội ngũ Hezb' });
-  await expect(team).toBeVisible();
-  await team.getByRole('button', { name: 'Thành viên tiếp theo' }).click();
-  await expect(team.getByRole('button', { name: 'Thành viên trước' })).toBeEnabled();
+  await expect(page.getByRole('heading', { name: 'Đội ngũ Hezb' })).toBeVisible();
+  const teamCards = page.locator('.member-grid .member-card');
+  await expect(teamCards).toHaveCount(3);
+  await expect(page.getByRole('button', { name: 'Thành viên tiếp theo' })).toHaveCount(0);
 });
 
 test('draft projects stay unavailable and admin redirects to login', async ({ page }) => {
@@ -36,6 +36,15 @@ test('category filter and published project detail are reachable', async ({ page
   await expect(page.getByRole('heading', { level: 1 })).toContainText('AI insights workspace');
 });
 
+test('visitor can inspect an open role and application form', async ({ page }) => {
+  await page.goto('/vi/careers');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('điều tiếp theo');
+  await expect(page.locator('.job-card')).toHaveCount(2);
+  await page.getByRole('button', { name: 'Ứng tuyển vị trí này' }).first().click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.getByLabel('CV / hồ sơ *')).toBeVisible();
+});
+
 test('demo admin can open member and message workspaces', async ({ page }) => {
   await page.goto('/admin/login');
   await page.getByLabel('Email').fill('demo@hezb.local');
@@ -48,4 +57,6 @@ test('demo admin can open member and message workspaces', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Messages');
   await page.locator('button.table-link').filter({ hasText: 'Nguyễn Hà' }).click();
   await expect(page.getByRole('link', { name: 'Reply by email' })).toBeVisible();
+  await page.goto('/admin/careers');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Careers');
 });

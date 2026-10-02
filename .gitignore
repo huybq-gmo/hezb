@@ -5,6 +5,7 @@
 
 # Next.js and package-manager output
 .next/
+.open-next/
 out/
 node_modules/
 *.tsbuildinfo

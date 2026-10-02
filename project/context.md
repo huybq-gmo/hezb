@@ -21,7 +21,8 @@
 | 6 - Admin auth/shell | Complete locally | Protected layout, Supabase auth path, local demo auth, responsive sidebar and noindex metadata are implemented. |
 | 7 - Admin projects | Complete locally | Typed editor, translations, publish/feature/reorder/delete actions and 5 MB media validation are implemented. Cloud persistence needs Supabase verification. |
 | 8 - Admin members/messages | Complete locally | Member editor/action, inbox table, status workflow and media validation are implemented. Cloud persistence needs Supabase verification. |
-| 9 - Hardening/deploy | Local checks complete; deploy pending | Error/loading/404, E2E, docs, SEO and accessibility foundations pass. Lighthouse, cloud security smoke and Worker deploy remain pending. |
+| 9 - Hardening/deploy | Worker deployed; cloud verification pending | Error/loading/404, E2E, docs, SEO and accessibility foundations pass. Worker deployment is live at `https://contact.hezb.workers.dev`; Lighthouse, cloud security smoke and Supabase production verification remain pending. |
+| 10 - Careers and community refresh | Complete locally; migration pending | Public job board with CV application flow, admin role/application workspace, private CV storage policy, three-member no-carousel landing behavior, community positioning, and local project/hero illustrations are implemented. Apply migration `0002_careers.sql` and verify cloud storage/Auth before production. |
 
 ## Verified In Repository
 
@@ -35,14 +36,24 @@
 - `package.json` and `pnpm-lock.yaml` define the Next.js/Supabase/i18n/form/OpenNext stack. Next 15.5.26 is pinned because the available host is Node 18.19.1.
 - Branding assets from `docs/assets/` are copied into `public/brand/` and used by the app.
 - Initial local baseline covered 13 contract tests before the Phase 9 hardening additions.
-- `node --test tests/*.test.mjs` passed: 19 tests, 0 failures after hardening/admin workflow, team slider coverage, and the theme hydration regression test (2026-10-01).
+- `node --test tests/*.test.mjs` passed: 24 tests, 0 failures after hardening/admin workflow, team slider coverage, theme hydration regression, card-index typography, Turnstile integration, request-level admin gating, and OpenNext deployment artifact coverage (2026-10-02).
 - `./node_modules/.bin/eslint .` passed and `./node_modules/.bin/tsc --noEmit` passed.
 - `./node_modules/.bin/next build` passed; all public/admin routes compiled and sitemap/robots were generated.
-- `./node_modules/.bin/playwright test` passed: 5 browser tests (landing/projects, draft/admin guard, contact validation, category/detail, demo admin members/messages).
+- `./node_modules/.bin/playwright test` passed: 6 browser tests with fixture Supabase/Turnstile env isolation (landing/projects, draft/admin guard, contact validation, category/detail, careers/application dialog, demo admin members/messages/careers).
 - Team section uses a responsive scroll-snap slider with keyboard-visible previous/next controls and transparent member placeholder media at `public/brand/hezb-member-placeholder.svg`; no member-specific assets were available in `docs/assets/`.
 - `ThemeToggle` now starts with a stable `system` state and reads `localStorage` only after mount, preventing server/client markup drift. A Chrome smoke check with `hezb-theme=dark` reported no hydration errors.
+- Mission/value card indexes use a more legible `14px` size with explicit line-height and tracking; a 686px Playwright viewport measured all `01–04` indexes at `14px` and the grid screenshot was inspected.
+- Contact now renders the Cloudflare Turnstile widget when `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is set, forwards the token to the server action, and resets the widget after a successful submit.
+- OpenNext deployment artifacts are versioned in `open-next.config.ts` and `wrangler.jsonc`; package scripts expose `open-next:build`, `open-next:preview`, and `deploy`.
+- Admin paths are request-gated by `src/middleware.ts`; anonymous and invalid-session requests are redirected to `/admin/login`, while the server-side Supabase `is_admin()` check remains authoritative for access.
+- `docs/DEPLOY.md` documents the complete Supabase/OpenNext deployment flow, production environment contract, admin provisioning, no-Resend configuration, smoke checks, rollback, and troubleshooting for `https://contact.hezb.workers.dev`.
+- `.env.example` contains placeholders only; the local Supabase URL variable typo was corrected in `.env.local` without recording any secret in project context.
 - Admin server reads now use authenticated Supabase queries with local fixture fallback; member/project CRUD routes include edit, publish/feature toggles, reorder and delete controls.
 - Public translation merging falls back field-by-field to Vietnamese, and project/member media validators reject arbitrary external URLs.
+- Career schema `supabase/migrations/0002_careers.sql` adds bilingual jobs, candidate applications, private `candidate-cvs` storage, and admin-only application reads. Public applications validate CV type/size, honeypot and optional Turnstile before insert.
+- The landing page uses a community-focused hero image and local project illustrations. Featured members are capped at three; exactly three members render as a static grid without carousel controls, while larger sets retain the accessible slider.
+- Careers UI includes published role cards, detail disclosure, application dialog, bilingual fields, and admin CRUD/status/CV signed-link workflow. `tests/phase-10-careers.test.mjs` covers schema, wiring, and local assets.
+- Google Search Console verification is configured through root Next metadata and confirmed in the rendered `/vi` HTML. The verification token is not duplicated in individual pages.
 
 ## External Actions Still Required
 
@@ -54,6 +65,7 @@ These cannot be verified from this repository and must be completed before the P
 4. Create Cloudflare Turnstile and Workers resources; store secrets in the local secret manager or `.env.local` only.
 5. Confirm Supabase Auth redirect URLs, production URL, and whether the optional Resend adapter is enabled.
 6. Review the approved logo asset already copied from `docs/assets/` into `public/brand/`.
+7. Confirm the deployed Worker URL and production domain configuration; Wrangler authentication and Node.js 22+ are verified locally.
 
 Do not mark these actions complete without evidence from the relevant dashboard/CLI command. Never commit `.env.local` or real secrets.
 
@@ -68,11 +80,12 @@ Do not mark these actions complete without evidence from the relevant dashboard/
 - [ ] Admin login and `public.admins` membership are verified.
 - [ ] Turnstile/Cloudflare resources and redirect URLs are documented with real values outside Git.
 - [ ] Supabase anon/admin security smoke test runs against a real project.
-- [ ] Lighthouse mobile and production Worker deployment are verified.
+- [ ] Lighthouse mobile and production Worker behavior are verified.
+- [x] OpenNext production build/deploy runs under Node.js 22+ with a real Cloudflare account; deployed URL is `https://contact.hezb.workers.dev`.
 
 ## Next Gate
 
-Provision Supabase/Cloudflare, run the migration/seed command in `docs/PHASE-0-SETUP.md`, set production env vars, and rerun the same lint/typecheck/build/E2E suite against the deployed Worker. Replace all `sample-*` and placeholder contact values before go-live.
+Run both Supabase migrations (`0001_initial_schema.sql` and `0002_careers.sql`), create the Auth admin user and add its UUID to `public.admins`, verify candidate-CV private storage and signed links, run Lighthouse and deployed E2E checks against `https://contact.hezb.workers.dev`, then replace all `sample-*` and placeholder contact values before go-live.
 
 ## Change Log
 
@@ -84,3 +97,13 @@ Provision Supabase/Cloudflare, run the migration/seed command in `docs/PHASE-0-S
 - **2026-10-01:** Admin guard now signs out authenticated non-admin users before redirecting; final typecheck, lint, build and diff checks pass. Local server is available at `http://127.0.0.1:3000`.
 - **2026-10-01:** Replaced the landing team grid with a responsive scroll-snap slider and transparent member media treatment; contract tests 19/19, E2E 5/5, typecheck, lint and production build pass. Visual screenshots were checked at desktop and mobile sizes.
 - **2026-10-01:** Fixed theme hydration drift by deferring the persisted theme read to `useEffect`; contract tests 19/19, typecheck, lint, production build, E2E 5/5, and a Chrome dark-theme hydration smoke check pass.
+- **2026-10-01:** Increased mission/value card index typography from 12px to 14px with a focused contract test; contract tests 20/20, typecheck, lint, production build and responsive visual inspection pass.
+- **2026-10-01:** Integrated explicit Cloudflare Turnstile rendering/token forwarding, sanitized `.env.example`, corrected the local Supabase URL key typo, added OpenNext/Wrangler deploy artifacts and deterministic fixture E2E env; contract tests 22/22, typecheck, lint, production build and E2E 5/5 pass. Production deploy remains pending Node.js 22+ and provider authentication.
+- **2026-10-02:** Fixed the production URL to include the HTTPS scheme and deployed OpenNext to Cloudflare Worker `hezb-website.hezbsoft.workers.dev`. Production checks for `/vi`, `/en`, `/admin/login`, `sitemap.xml` and `robots.txt` returned 200. Resend remains disabled; Turnstile is disabled until a matching public site key is configured.
+- **2026-10-02:** Renamed the production Worker to `contact`, deployed `https://contact.hezb.workers.dev` (version `de377c0e-10f2-4edf-8b6b-6f81207fb476`), and added request-level admin gating. Anonymous `/admin/*` requests now return `307` to `/admin/login`; public pages, sitemap and robots checks pass. Production Auth admin creation remains an external Supabase step.
+- **2026-10-02:** Tightened the request gate to validate Supabase `auth.getUser()` plus `is_admin()` in middleware. No-cookie and fake-cookie production checks return `307` to `/admin/login`; deployment version `c109c156-4d47-431d-808e-61e92564bb2e` is live.
+- **2026-10-02:** Restricted demo auth to development-only and redeployed the fail-closed guard as version `61f41f50-7f83-4210-8973-b14237862545`. Production no-cookie, fake-cookie and demo-cookie checks all return `307` to `/admin/login`.
+- **2026-10-02:** Rewrote `docs/DEPLOY.md` as a step-by-step production runbook covering Supabase migrations/Auth admin setup, ignored environment files, OpenNext deployment, smoke checks, rollback, and disabled Resend behavior.
+- **2026-10-02:** Added community positioning, a local collaboration hero image, local project illustrations, and static three-member landing behavior without carousel controls.
+- **2026-10-02:** Added careers/jobs and candidate CV workflow in migration `0002_careers.sql`, including private storage policies, public application validation, admin role CRUD, application status management, signed CV links, and focused contract tests. Local gates pass: 27 contract tests, 6 E2E tests, lint, typecheck, and production build.
+- **2026-10-02:** Added the provided Google Search Console verification token to root metadata. Verification is present in rendered HTML; 28 contract tests, lint, typecheck, and production build pass.

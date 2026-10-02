@@ -11,11 +11,11 @@ export async function loginAdmin(email: string, password: string): Promise<AuthR
     const { error } = await client.auth.signInWithPassword({ email, password });
     return error ? { ok: false, message: 'Invalid email or password.' } : { ok: true };
   }
-  if ((process.env.NODE_ENV as string) === 'production') return { ok: false, message: 'Admin authentication is not configured.' };
+  if (process.env.NODE_ENV !== 'development') return { ok: false, message: 'Admin authentication is not configured.' };
   const expectedEmail = process.env.HEZB_DEMO_ADMIN_EMAIL ?? 'demo@hezb.local';
   const expectedPassword = process.env.HEZB_DEMO_ADMIN_PASSWORD ?? 'demo';
   if (email === expectedEmail && password === expectedPassword) {
-    (await cookies()).set('hezb-demo-admin', '1', { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', path: '/' });
+    (await cookies()).set('hezb-demo-admin', '1', { httpOnly: true, sameSite: 'lax', secure: false, path: '/' });
     return { ok: true };
   }
   return { ok: false, message: 'Invalid demo credentials.' };

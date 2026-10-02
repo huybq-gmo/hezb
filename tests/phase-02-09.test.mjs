@@ -61,7 +61,30 @@ test('admin is excluded from indexing and has a protected layout', async () => {
   assert.match(layout, /redirect\('\/admin\/login'\)/);
   const guard = await read('src/lib/supabase/admin-guard.ts');
   assert.match(guard, /auth\.signOut/);
+  assert.match(guard, /hasSupabaseSession/);
+  assert.match(guard, /NODE_ENV === 'development'/);
   assert.match(root, /robots/);
+});
+
+test('public navigation hides the admin entry point and footer hashtags', async () => {
+  const header = await read('src/components/site/Header.tsx');
+  const footer = await read('src/components/site/Footer.tsx');
+  const viMessages = await read('messages/vi.json');
+  const enMessages = await read('messages/en.json');
+  assert.doesNotMatch(header, /\/admin\/login/);
+  assert.doesNotMatch(footer, /hashtags/);
+  assert.doesNotMatch(viMessages, /#Hezb|#BuildWhatsNext|#AI/);
+  assert.doesNotMatch(enMessages, /#Hezb|#BuildWhatsNext|#AI/);
+});
+
+test('admin requests have a production request-level gate', async () => {
+  const middleware = await read('src/middleware.ts');
+  assert.match(middleware, /ADMIN_LOGIN_PATH = '\/admin\/login'/);
+  assert.match(middleware, /hasSupabaseSession/);
+  assert.match(middleware, /auth\.getUser/);
+  assert.match(middleware, /rpc\('is_admin'\)/);
+  assert.match(middleware, /NextResponse\.redirect/);
+  assert.match(middleware, /matcher: \['\/admin\/:path\*'\]/);
 });
 
 test('optional outbound email preserves the inbox contract', async () => {
@@ -141,4 +164,30 @@ test('theme preference loads after mount to keep server and client markup stable
   assert.match(themeToggle, /useState<Theme>\('system'\)/);
   assert.match(themeToggle, /useEffect\(\(\) => \{\s+const saved = window\.localStorage\.getItem\('hezb-theme'\);/);
   assert.doesNotMatch(themeToggle, /useState<Theme>\(\(\) =>[\s\S]*localStorage\.getItem/);
+});
+
+test('mission and values card indexes remain legible', async () => {
+  const css = await read('src/app/globals.css');
+  assert.match(css, /\.feature-index \{[^}]*font-size: 14px/);
+  assert.match(css, /\.feature-index \{[^}]*line-height: 1\.2/);
+});
+
+test('contact form renders Turnstile and forwards its token', async () => {
+  const form = await read('src/components/site/ContactForm.tsx');
+  const widget = await read('src/components/site/TurnstileWidget.tsx');
+  assert.match(form, /TurnstileWidget/);
+  assert.match(form, /turnstileToken/);
+  assert.match(widget, /challenges\.cloudflare\.com\/turnstile\/v0\/api\.js/);
+  assert.match(widget, /window\.turnstile\.render/);
+});
+
+test('Cloudflare OpenNext deployment artifacts are configured', async () => {
+  const config = await read('open-next.config.ts');
+  const wrangler = await read('wrangler.jsonc');
+  const packageJson = await read('package.json');
+  assert.match(config, /defineCloudflareConfig/);
+  assert.match(wrangler, /\.open-next\/worker\.js/);
+  assert.match(wrangler, /nodejs_compat/);
+  assert.match(packageJson, /opennextjs-cloudflare build/);
+  assert.match(packageJson, /opennextjs-cloudflare deploy/);
 });

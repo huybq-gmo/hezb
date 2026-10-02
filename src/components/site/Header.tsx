@@ -24,7 +24,6 @@ export function Header({ locale, messages }: { locale: Locale; messages: Message
         <div className="header-actions">
           <LangSwitch locale={locale} label={messages.common.language} />
           <ThemeToggle label={messages.common.theme} />
-          <Link className="button button-small button-dark" href="/admin/login">{messages.common.admin}</Link>
         </div>
       </div>
     </header>

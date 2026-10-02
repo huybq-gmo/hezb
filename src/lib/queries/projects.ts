@@ -8,6 +8,12 @@ type ProjectRow = Database['public']['Tables']['projects']['Row'];
 type TranslationRow = Database['public']['Tables']['project_translations']['Row'];
 type CategoryRow = Database['public']['Tables']['categories']['Row'];
 
+const illustrationBySlug: Record<string, string> = {
+  'sample-ai-insights': '/illustrations/project-ai.jpg',
+  'sample-ops-automation': '/illustrations/project-automation.jpg',
+  'sample-custom-platform': '/illustrations/project-platform.jpg',
+};
+
 function categoryView(row: CategoryRow | null, locale: Locale): CategoryView | null {
   return row ? { id: row.id, slug: row.slug, name: locale === 'en' ? row.name_en : row.name_vi, sortOrder: row.sort_order } : null;
 }
@@ -23,7 +29,7 @@ function mergeProject(project: ProjectRow, translations: TranslationRow[], categ
     clientName: project.client_name,
     year: project.year,
     tech: project.tech,
-    coverUrl: project.cover_url,
+    coverUrl: project.cover_url || illustrationBySlug[project.slug] || null,
     gallery: project.gallery,
     websiteUrl: project.website_url,
     isPublished: project.is_published,

@@ -9,7 +9,10 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "open-next:build": "opennextjs-cloudflare build",
+    "open-next:preview": "opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "@hookform/resolvers": "5.2.2",
@@ -35,6 +38,6 @@
     "eslint-config-next": "15.5.26",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
-    "wrangler": "4.50.0"
+    "wrangler": "4.125.0"
   }
 }

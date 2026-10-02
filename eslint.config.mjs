@@ -1,3 +1,3 @@
 export default [{
-  ignores: ['.next/**', 'out/**', 'node_modules/**', 'public/brand/*.png'],
+  ignores: ['.next/**', '.open-next/**', 'out/**', 'node_modules/**', 'public/brand/*.png'],
 }];

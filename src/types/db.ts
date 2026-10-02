@@ -93,6 +93,59 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['admins']['Insert']>;
         Relationships: [];
       };
+      jobs: {
+        Row: {
+          id: string;
+          slug: string;
+          employment_type: 'full_time' | 'part_time' | 'contract' | 'internship';
+          location: string;
+          is_remote: boolean;
+          is_published: boolean;
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['jobs']['Row'], 'id' | 'created_at' | 'updated_at'> &
+          Partial<Pick<Database['public']['Tables']['jobs']['Row'], 'id' | 'created_at' | 'updated_at'>>;
+        Update: Partial<Database['public']['Tables']['jobs']['Insert']>;
+        Relationships: [];
+      };
+      job_translations: {
+        Row: {
+          job_id: string;
+          locale: Locale;
+          title: string;
+          summary: string;
+          description: string;
+          requirements: string;
+        };
+        Insert: Database['public']['Tables']['job_translations']['Row'];
+        Update: Partial<Database['public']['Tables']['job_translations']['Insert']>;
+        Relationships: [];
+      };
+      job_applications: {
+        Row: {
+          id: string;
+          job_id: string;
+          name: string;
+          email: string;
+          phone: string | null;
+          portfolio_url: string | null;
+          cover_note: string;
+          cv_path: string;
+          cv_filename: string;
+          cv_content_type: 'application/pdf' | 'application/msword' | 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+          cv_size: number;
+          locale: Locale;
+          status: 'new' | 'reviewing' | 'shortlisted' | 'rejected' | 'archived';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['job_applications']['Row'], 'id' | 'created_at' | 'updated_at' | 'status'> &
+          Partial<Pick<Database['public']['Tables']['job_applications']['Row'], 'id' | 'created_at' | 'updated_at' | 'status'>>;
+        Update: Partial<Database['public']['Tables']['job_applications']['Insert']>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Enums: Record<string, never>;
