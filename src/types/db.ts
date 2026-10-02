@@ -146,6 +146,56 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['job_applications']['Insert']>;
         Relationships: [];
       };
+      blog_posts: {
+        Row: {
+          id: string;
+          slug: string;
+          author_name: string;
+          cover_url: string | null;
+          tags: string[];
+          is_published: boolean;
+          is_featured: boolean;
+          sort_order: number;
+          published_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['blog_posts']['Row'], 'id' | 'created_at' | 'updated_at'> &
+          Partial<Pick<Database['public']['Tables']['blog_posts']['Row'], 'id' | 'created_at' | 'updated_at'>>;
+        Update: Partial<Database['public']['Tables']['blog_posts']['Insert']>;
+        Relationships: [];
+      };
+      blog_post_translations: {
+        Row: {
+          post_id: string;
+          locale: Locale;
+          title: string;
+          excerpt: string;
+          content: string;
+          seo_title: string | null;
+          seo_description: string | null;
+        };
+        Insert: Database['public']['Tables']['blog_post_translations']['Row'];
+        Update: Partial<Database['public']['Tables']['blog_post_translations']['Insert']>;
+        Relationships: [];
+      };
+      blog_post_attachments: {
+        Row: {
+          id: string;
+          post_id: string;
+          kind: 'image' | 'file';
+          name: string;
+          url: string;
+          content_type: string;
+          size_bytes: number;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['blog_post_attachments']['Row'], 'id' | 'created_at'> &
+          Partial<Pick<Database['public']['Tables']['blog_post_attachments']['Row'], 'id' | 'created_at'>>;
+        Update: Partial<Database['public']['Tables']['blog_post_attachments']['Insert']>;
+        Relationships: [];
+      };
       site_settings: {
         Row: {
           id: number;

@@ -36,6 +36,15 @@ test('category filter and published project detail are reachable', async ({ page
   await expect(page.getByRole('heading', { level: 1 })).toContainText('AI insights workspace');
 });
 
+test('visitor can browse a bilingual blog article with attachments section', async ({ page }) => {
+  await page.goto('/vi/blog');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Những điều chúng tôi đang học');
+  await page.getByRole('link', { name: /AI hữu ích bắt đầu từ một vấn đề rất cụ thể/i }).click();
+  await expect(page).toHaveURL(/\/vi\/blog\/ai-that-works-in-the-real-world$/);
+  await expect(page.getByRole('heading', { level: 1 }).first()).toContainText('AI hữu ích');
+  await expect(page.getByText('Tài nguyên đính kèm')).toBeVisible();
+});
+
 test('visitor can inspect an open role and application form', async ({ page }) => {
   await page.goto('/vi/careers');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('điều tiếp theo');

@@ -21,8 +21,10 @@
 | 6 - Admin auth/shell | Complete locally | Protected layout, Supabase auth path, local demo auth, responsive sidebar and noindex metadata are implemented. |
 | 7 - Admin projects | Complete locally | Typed editor, translations, publish/feature/reorder/delete actions and 5 MB media validation are implemented. Cloud persistence needs Supabase verification. |
 | 8 - Admin members/messages | Complete locally | Member editor/action, inbox table, status workflow and media validation are implemented. Cloud persistence needs Supabase verification. |
-| 9 - Hardening/deploy | Worker deployed; favicon verified in production | Error/loading/404, E2E, docs, SEO and accessibility foundations pass. Worker deployment is live at `https://contact.hezb.workers.dev`; favicon and production route smoke checks pass. Lighthouse, cloud security smoke and Supabase production verification remain pending. |
-| 10 - Careers and community refresh | Complete locally; migration pending | Public job board with CV application flow, admin role/application workspace, private CV storage policy, three-member no-carousel landing behavior, community positioning, and local project/hero illustrations are implemented. Apply migration `0002_careers.sql` and verify cloud storage/Auth before production. |
+| 9 - Hardening/deploy | Worker redeployed; production smoke pass | Error/loading/404, E2E, docs, SEO, accessibility foundations and performance query cleanup pass. Worker version `c6a8c315-09c7-414e-9290-27556244e177` is live at `https://contact.hezb.workers.dev`; Lighthouse and Supabase production verification remain pending. |
+| 10 - Careers, community and settings refresh | Complete locally; migrations pending | Public job board with CV application flow, admin role/application workspace, private CV storage policy, three-member no-carousel landing behavior, improved member cards, larger section indexes, polished admin editors, DB-managed contact settings and sample seed data are implemented. Apply migrations `0002_careers.sql` and `0003_site_settings.sql`, then seed approved content before production. |
+| 11 - Social sharing previews | Complete locally and deployed | Local `1200x630` brand asset, Facebook/Zalo Open Graph metadata, X summary card metadata, localized titles/descriptions and project-specific cover previews are implemented. |
+| 12 - Blog/editor | Complete locally and deployed; migration pending | Bilingual blog listing/detail pages, admin Markdown editor with preview/toolbar, SEO fields, featured/publish controls, up to 20 image/file attachments, public media policies, local fallback content, sitemap entries and admin navigation are implemented. Apply `0004_blog.sql` before using production persistence. |
 
 ## Verified In Repository
 
@@ -55,6 +57,13 @@
 - Careers UI includes published role cards, detail disclosure, application dialog, bilingual fields, and admin CRUD/status/CV signed-link workflow. `tests/phase-10-careers.test.mjs` covers schema, wiring, and local assets.
 - Google Search Console verification is configured through root Next metadata and confirmed in the rendered `/vi` HTML. The verification token is not duplicated in individual pages.
 - Root metadata uses `public/brand/hezb-logo-mono.svg` for browser, shortcut and Apple touch icons. Production `/vi` renders all three icon links, and the asset returns `200 image/svg+xml` from the deployed Worker.
+- Social sharing metadata now includes the `1200x630` raster asset `public/brand/hezb-social-card.jpg`, localized Open Graph title/description/alt text for Facebook and Zalo, and `summary_large_image` Twitter Card metadata for X. Project detail pages use their published cover image when available.
+- Blog support now includes `supabase/migrations/0004_blog.sql`, typed blog view models and queries with Vietnamese field fallback, local sample fixtures, bilingual public list/detail routes, admin CRUD actions, Markdown write/preview editing, SEO controls, publishing/featured flags, and multi-attachment image/PDF/DOC/DOCX uploads capped at 20 files and 5 MB per file. Public reads remain limited to published posts; admin writes require `requireAdmin()` and revalidate affected routes.
+- Blog production smoke checks pass for `/vi/blog`, `/vi/blog/ai-that-works-in-the-real-world`, `/sitemap.xml`, and anonymous `/admin/blog` redirecting to `/admin/login`. The latest Worker version is `c6a8c315-09c7-414e-9290-27556244e177`; article metadata no longer duplicates the `| Hezb` suffix.
+- Latest blog validation: `pnpm test` passed 36/36 contract tests, `pnpm test:e2e` passed 7/7 browser tests, and lint/typecheck/build passed before deployment.
+- `public.site_settings` migration `0003_site_settings.sql`, typed public query, admin Settings editor and revalidation now back the public contact email, phone, address and response-time values. Until the migration is applied to Supabase production, the deployed page intentionally uses the local fallback values.
+- Admin project, member and career editors now use structured sections, a publishing panel, preview media and larger controls. Member cards use a vertical profile layout with readable role/name/bio typography and numbered avatars.
+- Public project/member/job queries select only required fields; the homepage requests featured rows and the member page is revalidated for 5 minutes. Local project/member images are no longer forced through `unoptimized` delivery. Curl smoke timings on the deployed Worker were approximately 0.54-1.67s total across `/admin`, `/vi`, `/vi/contact` and `/vi/members`; Chrome DevTools trace MCP was unavailable in this session.
 
 ## External Actions Still Required
 
@@ -67,6 +76,7 @@ These cannot be verified from this repository and must be completed before the P
 5. Confirm Supabase Auth redirect URLs, production URL, and whether the optional Resend adapter is enabled.
 6. Review the approved logo asset already copied from `docs/assets/` into `public/brand/`.
 7. Confirm the deployed Worker URL and production domain configuration; Wrangler authentication and Node.js 22+ are verified locally.
+8. Apply `0003_site_settings.sql` and `0004_blog.sql`, create the public `blog-media` bucket policies, and run the reviewed sample seed/content workflow. Production contact details, blog persistence and public sample rows cannot be marked complete until the Supabase dashboard confirms them.
 
 Do not mark these actions complete without evidence from the relevant dashboard/CLI command. Never commit `.env.local` or real secrets.
 
@@ -82,11 +92,11 @@ Do not mark these actions complete without evidence from the relevant dashboard/
 - [ ] Turnstile/Cloudflare resources and redirect URLs are documented with real values outside Git.
 - [ ] Supabase anon/admin security smoke test runs against a real project.
 - [ ] Lighthouse mobile and production Worker behavior are verified.
-- [x] OpenNext production build/deploy runs under Node.js 22+ with a real Cloudflare account; deployed URL is `https://contact.hezb.workers.dev`.
+- [x] OpenNext production build/deploy runs under Node.js 22+ with a real Cloudflare account; deployed URL is `https://contact.hezb.workers.dev` and latest version is `c6a8c315-09c7-414e-9290-27556244e177`.
 
 ## Next Gate
 
-Run both Supabase migrations (`0001_initial_schema.sql` and `0002_careers.sql`), create the Auth admin user and add its UUID to `public.admins`, verify candidate-CV private storage and signed links, run Lighthouse and deployed E2E checks against `https://contact.hezb.workers.dev`, then replace all `sample-*` and placeholder contact values before go-live.
+Run all four Supabase migrations (`0001_initial_schema.sql`, `0002_careers.sql`, `0003_site_settings.sql` and `0004_blog.sql`), create the Auth admin user and add its UUID to `public.admins`, verify candidate-CV private storage, blog-media public storage and signed links, run Lighthouse and deployed E2E checks against `https://contact.hezb.workers.dev`, then replace all `sample-*` and placeholder contact/blog values before go-live.
 
 ## Change Log
 
@@ -109,3 +119,7 @@ Run both Supabase migrations (`0001_initial_schema.sql` and `0002_careers.sql`),
 - **2026-10-02:** Added careers/jobs and candidate CV workflow in migration `0002_careers.sql`, including private storage policies, public application validation, admin role CRUD, application status management, signed CV links, and focused contract tests. Local gates pass: 27 contract tests, 6 E2E tests, lint, typecheck, and production build.
 - **2026-10-02:** Added the provided Google Search Console verification token to root metadata. Verification is present in rendered HTML; 28 contract tests, lint, typecheck, and production build pass.
 - **2026-10-02:** Added the Hezb mono mark as the browser favicon and redeployed Worker `contact` as version `912e44ac-3337-4bab-9fec-132d52c57cd4`. Production `/vi` exposes shortcut, icon and Apple touch icon links; the SVG asset and `/en`, `/admin/login`, `/sitemap.xml`, `/robots.txt` return 200, while anonymous `/admin` redirects to `/admin/login`. Contract tests 29/29, lint, typecheck and production build pass.
+- **2026-10-02:** Added `0003_site_settings.sql`, database-backed contact details with admin Settings management, structured admin create/edit forms, redesigned member cards, larger `02 / Sứ mệnh` and `05 / Con người` typography, lighter public query payloads and updated sample seed data with three published members. Contract tests 30/30, lint, typecheck, build and E2E 6/6 pass. Redeployed Worker `contact` as version `ddcc36d6-ed95-4c16-9ddb-b1aafe384b2f`; production smoke routes pass, while Supabase migrations/seed remain pending.
+- **2026-10-02:** Redeployed the latest member fallback/performance fix as Worker version `0517c754-1a0c-47b9-8fd0-69412f3bad4a`. Production checks for `/vi`, `/vi/members`, `/vi/contact`, `/admin` and `/favicon.svg` returned successfully; Supabase migrations and seed remain pending.
+- **2026-10-02:** Added a raster `1200x630` social preview generated from the existing Hezb brand asset, wired localized Open Graph and X card metadata for all public pages plus project-specific cover previews, and added 2 focused contract tests (32/32 total). Lint, typecheck and production build pass. Deployed Worker `contact` as version `a4ec961a-59ac-42b1-b592-44055bf3687a`; production image and metadata smoke checks pass for `/vi` and `/en`.
+- **2026-10-02:** Added the bilingual blog/editor workflow: migration `0004_blog.sql`, RLS and `blog-media` storage policies, typed query/action/validator layers, public list/detail pages, admin Markdown editor with preview and toolbar, SEO/publishing controls, and multi-file attachment support. Focused contract tests total 36/36 and browser tests total 7/7; lint, typecheck and production build pass. Deployed Worker `contact` as version `c6a8c315-09c7-414e-9290-27556244e177`; production blog, sitemap and admin redirect smoke checks pass.

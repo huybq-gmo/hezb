@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation';
 import { getMessages } from '@/lib/i18n';
 import { getProjectBySlug, getPublishedSlugs } from '@/lib/queries/projects';
 import { isLocale } from '@/i18n/routing';
-import { localizedMetadata } from '@/lib/seo';
+import { localizedMetadata, socialPreviewImage } from '@/lib/seo';
 
 export const revalidate = 300;
 
@@ -15,7 +15,24 @@ export async function generateStaticParams() { const slugs = await getPublishedS
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale: rawLocale, slug } = await params; if (!isLocale(rawLocale)) return {};
   const project = await getProjectBySlug(slug, rawLocale); if (!project) return {};
-  return { ...localizedMetadata(rawLocale, project.title, project.summary, `/projects/${slug}`), openGraph: { title: project.title, description: project.summary, type: 'article', url: `/${rawLocale}/projects/${slug}`, images: project.coverUrl ? [project.coverUrl] : undefined } };
+  const previewImage = project.coverUrl ? { url: project.coverUrl, alt: `${project.title} cover` } : socialPreviewImage;
+  return {
+    ...localizedMetadata(rawLocale, project.title, project.summary, `/projects/${slug}`),
+    openGraph: {
+      title: project.title,
+      description: project.summary,
+      type: 'article',
+      url: `/${rawLocale}/projects/${slug}`,
+      siteName: 'Hezb Community',
+      images: [previewImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: project.title,
+      description: project.summary,
+      images: [previewImage.url],
+    },
+  };
 }
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {

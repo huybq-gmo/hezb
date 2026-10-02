@@ -67,6 +67,36 @@ export type JobApplicationView = {
   createdAt: string;
 };
 
+export type BlogAttachmentView = {
+  id: string;
+  kind: 'image' | 'file';
+  name: string;
+  url: string;
+  contentType: string;
+  sizeBytes: number;
+  sortOrder: number;
+};
+
+export type BlogPostView = {
+  id: string;
+  slug: string;
+  authorName: string;
+  coverUrl: string | null;
+  tags: string[];
+  isPublished: boolean;
+  isFeatured: boolean;
+  sortOrder: number;
+  publishedAt: string | null;
+  createdAt: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  seoTitle: string;
+  seoDescription: string;
+  attachments: BlogAttachmentView[];
+  locale: Locale;
+};
+
 export type SiteSettingsView = {
   email: string;
   phone: string;

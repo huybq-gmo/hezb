@@ -10,6 +10,7 @@ export function Header({ locale, messages }: { locale: Locale; messages: Message
     ['home', `/${locale}`],
     ['about', `/${locale}/about`],
     ['projects', `/${locale}/projects`],
+    ['blog', `/${locale}/blog`],
     ['members', `/${locale}/members`],
     ['careers', `/${locale}/careers`],
     ['contact', `/${locale}/contact`],

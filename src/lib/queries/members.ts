@@ -43,7 +43,8 @@ export async function getMembers(locale: Locale, limit?: number): Promise<Member
       if (!translationError) return members.map((member) => mergeMember(member, (translations ?? []).filter((row) => row.member_id === member.id), locale));
     }
   }
-  return localMembersFor(locale);
+  const fallback = localMembersFor(locale);
+  return limit ? fallback.slice(0, limit) : fallback;
 }
 
 export async function getAdminMembers(locale: Locale): Promise<MemberView[]> {

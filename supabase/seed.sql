@@ -109,3 +109,44 @@ on conflict (id) do update set
   address_en = excluded.address_en,
   response_time_vi = excluded.response_time_vi,
   response_time_en = excluded.response_time_en;
+
+insert into public.blog_posts (slug, author_name, cover_url, tags, is_published, is_featured, sort_order, published_at)
+values
+  ('ai-that-works-in-the-real-world', 'Hezb Community', '/illustrations/project-ai.jpg', array['AI', 'Product', 'Practical technology']::text[], true, true, 10, '2026-03-08T08:00:00Z'),
+  ('automation-without-the-chaos', 'Hezb Community', '/illustrations/project-automation.jpg', array['Automation', 'Operations']::text[], true, false, 20, '2026-02-20T08:00:00Z'),
+  ('draft-community-notes', 'Hezb Community', null, array['Draft']::text[], false, false, 99, null)
+on conflict (slug) do update set
+  author_name = excluded.author_name,
+  cover_url = excluded.cover_url,
+  tags = excluded.tags,
+  is_published = excluded.is_published,
+  is_featured = excluded.is_featured,
+  sort_order = excluded.sort_order,
+  published_at = excluded.published_at;
+
+insert into public.blog_post_translations (post_id, locale, title, excerpt, content, seo_title, seo_description)
+select p.id, t.locale, t.title, t.excerpt, t.content, t.seo_title, t.seo_description
+from public.blog_posts p
+join (values
+  ('ai-that-works-in-the-real-world', 'vi', 'AI hữu ích bắt đầu từ một vấn đề rất cụ thể', 'Một hệ thống AI tốt bắt đầu bằng việc hiểu người dùng đang mắc kẹt ở đâu.', '# AI hữu ích bắt đầu từ đâu?\n\nAI tạo ra giá trị khi nó giúp một người ra quyết định nhanh hơn, làm việc nhẹ hơn hoặc nhìn thấy điều trước đây bị bỏ sót.\n\n## Bắt đầu từ dòng công việc\n\nTrước khi chọn model hay framework, hãy quan sát một ngày làm việc thật. Những bước lặp lại và điểm bàn giao thường là nơi đáng bắt đầu nhất.\n\n> Công nghệ tốt không làm người dùng thấy mình đang vận hành một hệ thống phức tạp hơn.', 'AI hữu ích cho bài toán thực tế | Hezb', 'Cách bắt đầu một sản phẩm AI từ dòng công việc thật, nhu cầu thật và kết quả có thể đo được.'),
+  ('ai-that-works-in-the-real-world', 'en', 'Useful AI starts with a very specific problem', 'A dependable AI system starts by understanding where people are stuck.', '# Where does useful AI begin?\n\nAI creates value when it helps someone decide faster, remove repetitive work or see what was previously hidden.\n\n## Start with the workflow\n\nBefore choosing a model or framework, observe a real working day. Repeated steps and handoffs are often the best places to begin.\n\n> Good technology should not make people feel like they are operating a more complicated system.', 'Useful AI for real-world problems | Hezb', 'How to start an AI product with a real workflow, a real need and an outcome you can measure.'),
+  ('automation-without-the-chaos', 'vi', 'Tự động hóa mà không tạo thêm hỗn loạn', 'Tự động hóa tốt làm cho một quy trình trở nên dễ nhìn, dễ tin cậy và dễ cải thiện.', '# Tự động hóa mà không tạo thêm hỗn loạn\n\nNếu chưa hiểu luồng công việc, tự động hóa chỉ chuyển sự mơ hồ từ người này sang hệ thống khác.\n\n## Vẽ lại trước khi xây\n\nHãy bắt đầu bằng những trạng thái rõ ràng: việc gì đến, ai chịu trách nhiệm và khi nào cần con người can thiệp.', 'Tự động hóa vận hành rõ ràng hơn | Hezb', 'Một cách tiếp cận thực tế để thiết kế automation dễ quan sát và dễ mở rộng.'),
+  ('automation-without-the-chaos', 'en', 'Automation without the chaos', 'Good automation makes a workflow visible, dependable and easier to improve.', '# Automation without the chaos\n\nWithout understanding the flow, automation only moves ambiguity from a person into a system.\n\n## Map before you build\n\nStart with clear states: what arrives, who owns it and when a person needs to step in.', 'Clearer operations automation | Hezb', 'A practical approach to designing automation that stays observable and dependable.'),
+  ('draft-community-notes', 'vi', 'Ghi chú đang viết', 'Bài viết này đang được hoàn thiện.', '', null, null),
+  ('draft-community-notes', 'en', 'Notes in progress', 'This article is still being shaped.', '', null, null)
+) as t(slug, locale, title, excerpt, content, seo_title, seo_description) on t.slug = p.slug
+on conflict (post_id, locale) do update set
+  title = excluded.title,
+  excerpt = excluded.excerpt,
+  content = excluded.content,
+  seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description;
+
+insert into public.blog_post_attachments (post_id, kind, name, url, content_type, size_bytes, sort_order)
+select p.id, t.kind, t.name, t.url, t.content_type, t.size_bytes, t.sort_order
+from public.blog_posts p
+join (values
+  ('ai-that-works-in-the-real-world', 'image', 'AI workspace', '/illustrations/project-ai.jpg', 'image/jpeg', 1, 10),
+  ('automation-without-the-chaos', 'image', 'Automation workflow', '/illustrations/project-automation.jpg', 'image/jpeg', 1, 10)
+) as t(slug, kind, name, url, content_type, size_bytes, sort_order) on t.slug = p.slug
+where not exists (select 1 from public.blog_post_attachments a where a.post_id = p.id and a.name = t.name);
