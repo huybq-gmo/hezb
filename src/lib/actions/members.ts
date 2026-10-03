@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { getServerClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/supabase/admin-guard';
 import { memberSchema, type MemberInput } from '@/lib/validators/member';
+import { storagePathsFromPublicUrls } from '@/lib/storage';
 import { z } from 'zod';
 
 type MemberMutationResult = { ok: true } | { ok: false; message: string };
@@ -19,6 +20,7 @@ export async function saveMember(input: MemberInput, id?: string): Promise<Membe
     const parsedId = id ? memberIdSchema.safeParse(id) : null;
     if (id && !parsedId?.success) return { ok: false, message: 'Invalid member id.' };
     const previous = parsedId?.success ? await client.from('members').select('*').eq('id', parsedId.data).maybeSingle() : null;
+    const previousMedia = previous?.data?.avatar_url ? [previous.data.avatar_url] : [];
     const result = parsedId?.success ? await client.from('members').update(row).eq('id', parsedId.data) : await client.from('members').insert(row).select('id').single();
     if (result.error) return { ok: false, message: result.error.message };
     const memberId = parsedId?.success ? parsedId.data : result.data?.id;
@@ -30,6 +32,8 @@ export async function saveMember(input: MemberInput, id?: string): Promise<Membe
         else await client.from('members').delete().eq('id', memberId);
         return { ok: false, message: translationResult.error.message };
       }
+      const paths = storagePathsFromPublicUrls(previousMedia.filter((url) => url !== parsed.data.avatarUrl), 'member-media');
+      if (paths.length) await client.storage.from('member-media').remove(paths);
     }
   }
   revalidatePath('/vi'); revalidatePath('/en'); revalidatePath('/vi/members'); revalidatePath('/en/members'); return { ok: true };
@@ -39,7 +43,15 @@ export async function deleteMember(id: string): Promise<MemberMutationResult> {
   if (!(await requireAdmin())) return { ok: false, message: 'Admin access required.' };
   const parsedId = memberIdSchema.safeParse(id);
   if (!parsedId.success) return { ok: false, message: 'Invalid member id.' };
-  const client = await getServerClient(); if (client) { const { error } = await client.from('members').delete().eq('id', parsedId.data); if (error) return { ok: false, message: error.message }; }
+  const client = await getServerClient(); if (client) {
+    const previous = await client.from('members').select('avatar_url').eq('id', parsedId.data).maybeSingle();
+    const { error } = await client.from('members').delete().eq('id', parsedId.data);
+    if (error) return { ok: false, message: error.message };
+    if (previous.data?.avatar_url) {
+      const paths = storagePathsFromPublicUrls([previous.data.avatar_url], 'member-media');
+      if (paths.length) await client.storage.from('member-media').remove(paths);
+    }
+  }
   revalidatePath('/vi'); revalidatePath('/en'); revalidatePath('/vi/members'); revalidatePath('/en/members'); return { ok: true };
 }
 

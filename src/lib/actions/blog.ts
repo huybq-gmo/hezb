@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { getServerClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/supabase/admin-guard';
 import { blogSchema, type BlogInput } from '@/lib/validators/blog';
+import { storagePathsFromPublicUrls, storagePathsFromText } from '@/lib/storage';
 
 export type BlogMutationResult = { ok: true } | { ok: false; message: string };
 
@@ -33,6 +34,8 @@ export async function saveBlogPost(input: BlogInput, id?: string): Promise<BlogM
     const parsedId = id ? blogIdSchema.safeParse(id) : null;
     if (id && !parsedId?.success) return { ok: false, message: 'Invalid blog post id.' };
     const previous = parsedId?.success ? await client.from('blog_posts').select('*').eq('id', parsedId.data).maybeSingle() : null;
+    const previousAttachments = parsedId?.success ? await client.from('blog_post_attachments').select('url').eq('post_id', parsedId.data) : null;
+    const previousTranslations = parsedId?.success ? await client.from('blog_post_translations').select('content').eq('post_id', parsedId.data) : null;
     const publishedAt = parsed.data.isPublished ? previous?.data?.published_at ?? new Date().toISOString() : null;
     const row = {
       slug: parsed.data.slug,
@@ -70,6 +73,12 @@ export async function saveBlogPost(input: BlogInput, id?: string): Promise<BlogM
       })));
       if (attachmentResult.error) return { ok: false, message: attachmentResult.error.message };
     }
+    const previousMedia = storagePathsFromPublicUrls([previous?.data?.cover_url, ...(previousAttachments?.data ?? []).map((attachment) => attachment.url)].filter((url): url is string => Boolean(url)), 'blog-media');
+    const previousInlineMedia = storagePathsFromText((previousTranslations?.data ?? []).map((translation) => translation.content), 'blog-media');
+    const nextMedia = storagePathsFromPublicUrls([parsed.data.coverUrl, ...parsed.data.attachments.map((attachment) => attachment.url)].filter((url): url is string => Boolean(url)), 'blog-media');
+    const nextInlineMedia = storagePathsFromText([parsed.data.contentVi, parsed.data.contentEn], 'blog-media');
+    const removedPaths = [...previousMedia, ...previousInlineMedia].filter((path, index, paths) => ![...nextMedia, ...nextInlineMedia].includes(path) && paths.indexOf(path) === index);
+    if (removedPaths.length) await client.storage.from('blog-media').remove(removedPaths);
     revalidateBlog(parsed.data.slug);
     return { ok: true };
   }
@@ -100,10 +109,14 @@ export async function deleteBlogPost(id: string): Promise<BlogMutationResult> {
   if (!parsedId.success) return { ok: false, message: 'Invalid blog post id.' };
   const client = await getServerClient();
   if (client) {
-    const { data: attachments } = await client.from('blog_post_attachments').select('url').eq('post_id', parsedId.data);
+    const [{ data: post }, { data: attachments }, { data: translations }] = await Promise.all([
+      client.from('blog_posts').select('cover_url').eq('id', parsedId.data).maybeSingle(),
+      client.from('blog_post_attachments').select('url').eq('post_id', parsedId.data),
+      client.from('blog_post_translations').select('content').eq('post_id', parsedId.data),
+    ]);
     const { error } = await client.from('blog_posts').delete().eq('id', parsedId.data);
     if (error) return { ok: false, message: error.message };
-    const paths = (attachments ?? []).map((attachment) => attachment.url.split('/blog-media/')[1]).filter((path): path is string => Boolean(path));
+    const paths = [...storagePathsFromPublicUrls([post?.cover_url, ...(attachments ?? []).map((attachment) => attachment.url)].filter((url): url is string => Boolean(url)), 'blog-media'), ...storagePathsFromText((translations ?? []).map((translation) => translation.content), 'blog-media')].filter((path, index, all) => all.indexOf(path) === index);
     if (paths.length) await client.storage.from('blog-media').remove(paths);
   }
   revalidateBlog();

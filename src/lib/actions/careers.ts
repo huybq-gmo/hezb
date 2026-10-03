@@ -6,6 +6,7 @@ import { getServerClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/supabase/admin-guard';
 import { applicationIdSchema, candidateCvExtensions, candidateCvMaxBytes, candidateCvTypes, jobApplicationFieldsSchema, jobSchema, jobStatusSchema, type JobInput } from '@/lib/validators/career';
 import { z } from 'zod';
+import { checkRateLimit, rateLimitMessage } from '@/lib/rate-limit';
 
 type MutationResult = { ok: true } | { ok: false; message: string };
 const idSchema = z.string().trim().min(1).max(100);
@@ -31,6 +32,7 @@ function value(form: FormData, key: string): string {
 }
 
 export async function applyToJob(form: FormData): Promise<MutationResult> {
+  if (!(await checkRateLimit('application'))) return { ok: false, message: rateLimitMessage };
   const rawFile = form.get('cv');
   const file = rawFile instanceof File ? rawFile : null;
   const fields = jobApplicationFieldsSchema.safeParse({

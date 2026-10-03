@@ -64,8 +64,8 @@ export function MemberEditor({ id, initial }: { id?: string; initial?: MemberInp
         </fieldset>
         <fieldset className="form-panel admin-form-section">
           <legend className="admin-form-section-title">Profile image</legend>
-          <p className="admin-form-section-intro">Use a clear portrait or a transparent illustration. Images are limited to 5 MB.</p>
-          <ImageUploader bucket="member-media" label="Avatar" value={avatarUrl} onUploaded={setAvatarUrl} />
+          <p className="admin-form-section-intro">Use a clear portrait or a transparent illustration. Images are optimized before upload and stored at 5 MB or less.</p>
+          <ImageUploader bucket="member-media" label="Avatar" value={avatarUrl} persistedValue={initial?.avatarUrl ?? ''} onUploaded={setAvatarUrl} />
           <input type="hidden" name="avatarUrl" value={avatarUrl} />
         </fieldset>
       </div>

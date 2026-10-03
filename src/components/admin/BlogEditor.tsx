@@ -2,9 +2,12 @@
 
 import { Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import { saveBlogPost } from '@/lib/actions/blog';
 import { blogAttachmentSchema, type BlogInput } from '@/lib/validators/blog';
+import { maxImageStoredBytes, maxImageSourceBytes, optimizeImage } from '@/lib/image-optimization';
+import { storagePathsFromPublicUrls } from '@/lib/storage';
+import { getBrowserClient } from '@/lib/supabase/browser';
 import { BlogMediaUploader } from './BlogMediaUploader';
 import { ImageUploader } from './ImageUploader';
 import { MarkdownEditor } from './MarkdownEditor';
@@ -18,6 +21,33 @@ export function BlogEditor({ id, initial }: { id?: string; initial?: BlogInput }
   const [attachments, setAttachments] = useState(initial?.attachments ?? []);
   const [contentVi, setContentVi] = useState(initial?.contentVi ?? '');
   const [contentEn, setContentEn] = useState(initial?.contentEn ?? '');
+  const inlineImageUrlsRef = useRef<string[]>([]);
+
+  async function uploadInlineImage(file: File): Promise<string> {
+    if (file.size > maxImageSourceBytes) throw new Error('Images must be 20 MB or smaller before optimization.');
+    const optimized = await optimizeImage(file);
+    if (optimized.size > maxImageStoredBytes) throw new Error('This image is still larger than 5 MB after optimization.');
+    const client = getBrowserClient();
+    if (!client) return URL.createObjectURL(optimized);
+    const path = `posts/inline-${crypto.randomUUID()}-${optimized.name.replace(/[^a-zA-Z0-9._-]/g, '-')}`;
+    const result = await client.storage.from('blog-media').upload(path, optimized, { contentType: optimized.type, upsert: false });
+    if (result.error) throw new Error(result.error.message.includes('Bucket not found') ? 'Storage bucket is missing. Apply the Supabase migrations before uploading media.' : result.error.message);
+    const { data } = client.storage.from('blog-media').getPublicUrl(path);
+    inlineImageUrlsRef.current = [...inlineImageUrlsRef.current, data.publicUrl];
+    return data.publicUrl;
+  }
+
+  function updateContent(locale: 'vi' | 'en', nextValue: string) {
+    const previousValue = locale === 'vi' ? contentVi : contentEn;
+    const removed = inlineImageUrlsRef.current.filter((url) => previousValue.includes(url) && !nextValue.includes(url));
+    if (removed.length) {
+      const client = getBrowserClient();
+      const paths = storagePathsFromPublicUrls(removed, 'blog-media');
+      if (client && paths.length) void client.storage.from('blog-media').remove(paths);
+      inlineImageUrlsRef.current = inlineImageUrlsRef.current.filter((url) => !removed.includes(url));
+    }
+    if (locale === 'vi') setContentVi(nextValue); else setContentEn(nextValue);
+  }
 
   function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -60,7 +90,7 @@ export function BlogEditor({ id, initial }: { id?: string; initial?: BlogInput }
           <p className="admin-form-section-intro">Create a strong headline, a useful promise and a clear path through the story.</p>
           <div className="form-grid"><div className="form-field"><label htmlFor="blog-slug">Slug</label><input id="blog-slug" name="slug" defaultValue={initial?.slug} placeholder="useful-ai-for-real-world-problems" required /></div><div className="form-field"><label htmlFor="blog-author">Author</label><input id="blog-author" name="authorName" defaultValue={initial?.authorName ?? 'Hezb Community'} required /></div></div>
           <div className="form-field"><label htmlFor="blog-tags">Tags</label><input id="blog-tags" name="tags" defaultValue={initial?.tags.join(', ')} placeholder="AI, Product, Operations" /><small className="field-hint">Separate tags with commas. They help readers scan related ideas.</small></div>
-          <div className="form-field"><label>Cover image</label><ImageUploader bucket="blog-media" label="Upload cover image" value={coverUrl} onUploaded={setCoverUrl} /><input type="hidden" name="coverUrl" value={coverUrl} /></div>
+          <div className="form-field"><label>Cover image</label><ImageUploader bucket="blog-media" label="Upload cover image" value={coverUrl} persistedValue={initial?.coverUrl ?? ''} onUploaded={setCoverUrl} /><input type="hidden" name="coverUrl" value={coverUrl} /></div>
         </fieldset>
 
         <fieldset className="form-panel admin-form-section">
@@ -70,7 +100,7 @@ export function BlogEditor({ id, initial }: { id?: string; initial?: BlogInput }
           <div className="form-grid"><div className="form-field"><label htmlFor="blog-title-vi">Title (VI)</label><input id="blog-title-vi" name="titleVi" defaultValue={initial?.titleVi} required /></div><div className="form-field"><label htmlFor="blog-title-en">Title (EN)</label><input id="blog-title-en" name="titleEn" defaultValue={initial?.titleEn} required /></div></div>
           <div className="form-grid"><div className="form-field"><label htmlFor="blog-excerpt-vi">Excerpt (VI)</label><textarea id="blog-excerpt-vi" name="excerptVi" defaultValue={initial?.excerptVi} rows={4} required /></div><div className="form-field"><label htmlFor="blog-excerpt-en">Excerpt (EN)</label><textarea id="blog-excerpt-en" name="excerptEn" defaultValue={initial?.excerptEn} rows={4} required /></div></div>
           <div hidden><input name="contentVi" value={contentVi} readOnly /><input name="contentEn" value={contentEn} readOnly /></div>
-          {activeLocale === 'vi' ? <MarkdownEditor id="blog-content-vi" label="Article body (VI)" value={contentVi} onChange={setContentVi} /> : <MarkdownEditor id="blog-content-en" label="Article body (EN)" value={contentEn} onChange={setContentEn} />}
+          {activeLocale === 'vi' ? <MarkdownEditor id="blog-content-vi" label="Article body (VI)" value={contentVi} onChange={(value) => updateContent('vi', value)} onUploadImage={uploadInlineImage} /> : <MarkdownEditor id="blog-content-en" label="Article body (EN)" value={contentEn} onChange={(value) => updateContent('en', value)} onUploadImage={uploadInlineImage} />}
         </fieldset>
 
         <fieldset className="form-panel admin-form-section">
@@ -83,7 +113,7 @@ export function BlogEditor({ id, initial }: { id?: string; initial?: BlogInput }
         <fieldset className="form-panel admin-form-section">
           <legend className="admin-form-section-title">Attachments</legend>
           <p className="admin-form-section-intro">Add several images or downloadable files to make the article richer.</p>
-          <BlogMediaUploader value={attachments} onChange={setAttachments} />
+          <BlogMediaUploader value={attachments} persistedUrls={initial?.attachments.map((attachment) => attachment.url) ?? []} onChange={setAttachments} />
           <input type="hidden" name="attachments" value={JSON.stringify(attachments)} readOnly />
         </fieldset>
       </div>

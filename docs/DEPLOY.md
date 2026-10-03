@@ -50,6 +50,8 @@ supabase db push
 
 The migrations create the application tables, public contact settings, bilingual blog content and attachments, Row Level Security policies, `project-media`, `member-media`, `blog-media`, and private `candidate-cvs` buckets, plus the `is_admin()` function. Apply `0001_initial_schema.sql`, then `0002_careers.sql`, then `0003_site_settings.sql`, then `0004_blog.sql` to enable jobs, candidate applications, database-managed contact details, and the blog workspace.
 
+If an admin upload reports `Bucket not found`, the database migration that creates the relevant bucket has not reached the target Supabase project. Run `supabase db push`, then verify `project-media`, `member-media`, and `blog-media` under **Storage > Buckets**. Do not create a replacement bucket with a different name: the application and RLS policies use these exact names.
+
 For local development only, reset and seed the local database with:
 
 ```bash
@@ -89,6 +91,10 @@ TURNSTILE_SECRET_KEY=
 ```
 
 To enable it, create a Turnstile site for `contact.hezb.workers.dev`, set both keys, and redeploy. The public site key is bundled into the browser; the secret key must remain server-only.
+
+### 2.4 Cloudflare rate limiting
+
+`wrangler.jsonc` provisions the `CONTACT_RATE_LIMITER` binding at 5 attempts per 60 seconds. The contact form and public job application flow use the visitor IP from `cf-connecting-ip`; requests over the limit receive a retry message before any Supabase write or CV upload. The binding is managed by Cloudflare when `pnpm run deploy` runs. Local Next.js development has no binding and continues to rely on Turnstile (when configured) and the honeypot.
 
 ## 3. Configure production environment variables
 

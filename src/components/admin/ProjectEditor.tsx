@@ -83,7 +83,7 @@ export function ProjectEditor({ id, initial }: { id?: string; initial?: ProjectI
         <fieldset className="form-panel admin-form-section">
           <legend className="admin-form-section-title">Cover media</legend>
           <p className="admin-form-section-intro">A clear cover image gives the project grid a strong visual anchor.</p>
-          <ImageUploader bucket="project-media" label="Cover image" value={coverUrl} onUploaded={setCoverUrl} />
+          <ImageUploader bucket="project-media" label="Cover image" value={coverUrl} persistedValue={initial?.coverUrl ?? ''} onUploaded={setCoverUrl} />
           <input type="hidden" name="coverUrl" value={coverUrl} />
         </fieldset>
       </div>

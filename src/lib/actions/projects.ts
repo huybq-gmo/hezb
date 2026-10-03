@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { getServerClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/supabase/admin-guard';
 import { projectSchema, type ProjectInput } from '@/lib/validators/project';
+import { storagePathsFromPublicUrls } from '@/lib/storage';
 import { z } from 'zod';
 
 export type MutationResult = { ok: true } | { ok: false; message: string };
@@ -32,6 +33,10 @@ export async function saveProject(input: ProjectInput, id?: string): Promise<Mut
         else await client.from('projects').delete().eq('id', projectId);
         return { ok: false, message: translationResult.error.message };
       }
+      const previousMedia = previous?.data ? [previous.data.cover_url, ...previous.data.gallery].filter((url): url is string => Boolean(url)) : [];
+      const nextMedia = [parsed.data.coverUrl].filter((url): url is string => Boolean(url));
+      const removedPaths = storagePathsFromPublicUrls(previousMedia.filter((url) => !nextMedia.includes(url)), 'project-media');
+      if (removedPaths.length) await client.storage.from('project-media').remove(removedPaths);
     }
   }
   for (const locale of ['vi', 'en'] as const) revalidatePath(`/${locale}/projects`);
@@ -57,7 +62,15 @@ export async function deleteProject(id: string): Promise<MutationResult> {
   if (!(await requireAdmin())) return { ok: false, message: 'Admin access required.' };
   const parsedId = projectIdSchema.safeParse(id);
   if (!parsedId.success) return { ok: false, message: 'Invalid project id.' };
-  const client = await getServerClient(); if (client) { const { error } = await client.from('projects').delete().eq('id', parsedId.data); if (error) return { ok: false, message: error.message }; }
+  const client = await getServerClient(); if (client) {
+    const previous = await client.from('projects').select('cover_url, gallery').eq('id', parsedId.data).maybeSingle();
+    const { error } = await client.from('projects').delete().eq('id', parsedId.data);
+    if (error) return { ok: false, message: error.message };
+    if (previous.data) {
+      const paths = storagePathsFromPublicUrls([previous.data.cover_url, ...previous.data.gallery].filter((url): url is string => Boolean(url)), 'project-media');
+      if (paths.length) await client.storage.from('project-media').remove(paths);
+    }
+  }
   revalidatePath('/vi/projects'); revalidatePath('/en/projects'); return { ok: true };
 }
 

@@ -2,6 +2,7 @@
 
 import { getPublicClient } from '@/lib/supabase/public';
 import { contactSchema, type ContactInput } from '@/lib/validators/contact';
+import { checkRateLimit, rateLimitMessage } from '@/lib/rate-limit';
 
 export type ContactResult = { ok: true } | { ok: false; message: string; fieldErrors?: Record<string, string> };
 
@@ -16,6 +17,7 @@ async function verifyTurnstile(token: string): Promise<boolean> {
 }
 
 export async function submitContact(input: ContactInput): Promise<ContactResult> {
+  if (!(await checkRateLimit('contact'))) return { ok: false, message: rateLimitMessage };
   const parsed = contactSchema.safeParse(input);
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};
